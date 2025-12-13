@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ôn Tập Linh Kiện Điện Tử - Giáo Viên Ảo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+        body { font-family: 'Roboto', sans-serif; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .input-group { @apply flex items-center gap-2 mb-2; }
+        .unit-select { @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none transition-colors; }
+        .value-input { @apply bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 outline-none font-mono transition-shadow; }
+        
+        .question-card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-color: #a5b4fc;
+        }
+        
+        /* Score Badge Animation */
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            80% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        .score-badge { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+    </style>
+</head>
+<body class="bg-gray-100 h-screen overflow-hidden flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-indigo-900 text-white p-4 shadow-md flex justify-between items-center z-10 shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-white text-indigo-900 rounded-full flex items-center justify-center font-bold text-xl shadow-sm">
+                <i class="fas fa-microchip"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold tracking-wide">Luyện Thi Linh Kiện</h1>
+                <p class="text-xs text-indigo-300" id="examId">Mã đề: ---</p>
+            </div>
+        </div>
+        <div class="hidden md:flex items-center gap-4 text-sm">
+            <span class="bg-emerald-600 px-3 py-1 rounded-full border border-emerald-500 shadow-sm flex items-center gap-2">
+                <i class="fas fa-user-graduate"></i> Chấm điểm thông minh
+            </span>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="flex flex-1 overflow-hidden">
+        
+        <!-- Sidebar -->
+        <aside class="w-80 bg-white shadow-xl border-r border-gray-200 flex flex-col z-20 overflow-y-auto shrink-0 relative">
+            <div class="p-6 space-y-6">
+                <!-- Config Section -->
+                <div>
+                    <h2 class="text-lg font-bold text-gray-800 border-b pb-2 mb-4 flex items-center">
+                        <i class="fas fa-cogs mr-2 text-indigo-600"></i>Cấu Hình Đề
+                    </h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Số lượng câu hỏi:</label>
+                            <input type="number" id="numQuestions" min="1" max="50" value="1" 
+                                   class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Số ý lý thuyết/câu:</label>
+                            <input type="number" id="numTheory" min="1" max="5" value="2" 
+                                   class="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-indigo-500 outline-none transition shadow-sm">
+                        </div>
+                        
+                        <!-- New Option: Theory Only -->
+                        <div class="flex items-center mt-3 pt-3 border-t border-gray-200">
+                            <input id="theoryOnlyMode" type="checkbox" value="" class="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500 cursor-pointer">
+                            <label for="theoryOnlyMode" class="ml-2 text-sm font-medium text-gray-900 cursor-pointer select-none">Chỉ luyện lý thuyết (Chấm 10đ)</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="space-y-3">
+                    <button onclick="generateExam()" 
+                            class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-200 flex items-center justify-center gap-2 transform active:scale-[0.98]">
+                        <i class="fas fa-random"></i> Tạo Đề Mới
+                    </button>
+                    <button onclick="checkAll()" 
+                            class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-200 flex items-center justify-center gap-2 transform active:scale-[0.98]">
+                        <i class="fas fa-check-double"></i> Chấm Tất Cả
+                    </button>
+                    <button onclick="resetForms()" 
+                            class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-200 flex items-center justify-center gap-2 text-sm transform active:scale-[0.98]">
+                        <i class="fas fa-undo"></i> Làm Lại
+                    </button>
+                </div>
+
+                <!-- Stats -->
+                <div class="bg-slate-50 p-4 rounded-lg text-sm text-slate-700 border border-slate-200 mt-auto shadow-inner">
+                    <p class="font-bold mb-2 border-b pb-1">Kho Dữ Liệu:</p>
+                    <div class="grid grid-cols-2 gap-y-1 gap-x-2 text-xs">
+                        <span><i class="fas fa-bolt text-yellow-600 w-4"></i> R: <b id="countR">0</b></span>
+                        <span><i class="fas fa-car-battery text-blue-600 w-4"></i> C: <b id="countC">0</b></span>
+                        <span><i class="fas fa-magnet text-red-600 w-4"></i> L: <b id="countL">0</b></span>
+                        <span><i class="fas fa-book text-green-600 w-4"></i> Q: <b id="countQ">0</b></span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Question Container -->
+        <main class="flex-1 overflow-y-auto bg-slate-100 p-4 md:p-8" id="main-scroll">
+            <div id="questions-container" class="flex flex-col gap-8 pb-20 max-w-4xl mx-auto w-full">
+                <!-- Cards injected via JS -->
+            </div>
+            
+            <div id="empty-state" class="hidden h-full flex flex-col items-center justify-center text-gray-400">
+                <i class="fas fa-clipboard-list text-6xl mb-4 opacity-50"></i>
+                <p>Nhấn "Tạo Đề Mới" để bắt đầu ôn tập</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- Logic Script -->
+    <script>
+        // --- 1. DỮ LIỆU LINH KIỆN ---
+        const rawResistors = [
+            "Lam – vàng – cam - đen – vàng kim",
+            "Tím – cam – lục – không màu",
+            "Tím – lục – đỏ - cam – vàng kim",
+            "Tím – xám – đỏ - nâu – vàng kim",
+            "Lục – trắng – bạch kim – không màu",
+            "Lam – trắng – bạch kim – không màu",
+            "Lục – xám – đỏ - nâu – vàng kim",
+            "Vàng – trắng – đỏ - nâu – vàng kim"
+        ];
+
+        const rawCapacitors = [
+            "0.05/500; 104F/250V", "0.05/150; 107J/150V", "0.03/200; 106K/150V",
+            "0.01/150; 106M/200V", "0.05/100; 105J/50V", "0.08/100; 107J/150V",
+            "0.47/200; 105J/150V", "0.68/150; 103F/200V", "0.56/150; 104G/200V",
+            "0.47/200; 105K/150V", "1.47/200; 105M/150V", "0.68/200; 105M/150V",
+            "0.47/200; 106F/150V", "0.56/200; 105F/150V"
+        ];
+        
+        const rawInductors = [
+            "Lục - đỏ-vàng kim -vàng kim", "Cam- đỏ -bạch kim -vàng kim",
+            "Đỏ - cam-bạch kim- vàng kim", "Trắng - tím-vàng kim -bạch kim",
+            "Lam - đỏ-vàng kim-bạch kim", "Lục- đỏ - bạch kim -vàng kim",
+            "Lam - xám-vàng kim-bạch kim", "Đỏ - tím-vàng kim-bạch kim",
+            "Lam - tím-vàng kim-bạch kim", "Lam - vàng-vàng kim-bạch kim",
+            "Trắng - vàng-vàng kim-bạch kim", "Cam-tím- lam-bạch kim",
+            "Vàng-tím- đỏ-vàng kim", "Lục-tím- đỏ-vàng kim", "Lam-đỏ- xám-bạch kim"
+        ];
+
+        // --- NGÂN HÀNG ĐÁP ÁN LÝ THUYẾT ---
+        const theoryDatabase = [
+            { q: "Màn hình cảm ứng kiểu hồng ngoại hoạt động dựa trên nguyên tắc nào?", k: ["ngắt", "tia sáng", "hồng ngoại"], a: "Dựa trên nguyên tắc ngắt tia sáng." },
+            { q: "Khi có một thay đổi nhỏ trong dòng cực gốc của một transistor thì dòng cực phát của nó sẽ thay đổi như thế nào?", k: ["lớn", "giá trị B", "beta", "hệ số"], a: "Dòng cực phát sẽ thay đổi lớn phụ thuộc vào giá trị β (vì IE = (β+1)IB)." },
+            { q: "Nếu điện trở bị hở mạch thì dòng qua nó bằng bao nhiêu?", k: ["0", "không", "bằng không"], a: "Bằng 0." },
+            { q: "Mạch khuếch đại dùng BJT để có hiệu suất làm việc lớn nhất thì cần chọn điểm làm việc tĩnh tại vị trí nào trên đường tải tĩnh?", k: ["trung điểm", "giữa"], a: "Tại trung điểm trên đường tải tĩnh." },
+            { q: "Khi điện áp phân cực thuận tăng từ 5V đến 10V, miền điện tích không gian của lớp chuyển tiếp PN sẽ như thế nào?", k: ["giảm", "hẹp"], a: "Độ rộng vùng điện tích không gian giảm, Điện trường tiếp xúc giảm, Điện thế tiếp xúc trong giảm." },
+            { q: "Cảm biến áp suất kiểu tụ hoạt động dựa trên nguyên tắc nào?", k: ["điện dung", "khoảng cách", "biến dạng"], a: "Dựa vào giá trị điện dung để xác định chỉ số áp suất. Khi thay đổi khoảng cách của cực tụ thì điện dung của tụ cũng sẽ thay đổi." },
+            { q: "VCE của một transistor công suất thấp ở trạng thái tắt có giá trị khoảng bao nhiêu?", k: ["2V", "5V", "2", "5"], a: "2V - 5V." },
+            { q: "Khi điện áp phân cực ngược tăng từ 5V đến 10V, miền điện tích không gian của lớp chuyển tiếp PN sẽ như thế nào?", k: ["tăng", "rộng"], a: "Hiệu điện thế tiếp xúc tăng (làm I ngược tăng), Độ rộng vùng điện tích không gian tăng, Điện tích vùng chuyển tiếp tăng." },
+            { q: "Khi chiếu ánh sáng vào điện trở quang thì giá trị điện trở sẽ như thế nào?", k: ["thay đổi", "bước sóng", "cường độ"], a: "Giá trị điện trở thay đổi theo bước sóng và cường độ sáng chiếu vào." },
+            { q: "Phương pháp đo áp suất tĩnh dựa trên nguyên tắc nào?", k: ["lỗ khoan", "biến dạng", "thành bình"], a: "PP1: Đo áp suất chất liệu qua một lỗ được khoan trên thành bình nhờ cảm biến thích hợp; PP2: Đo trực tiếp biến dạng của thành bình do áp suất gây nên." },
+            { q: "Khi VDS ≈ VDD thì JFET hoạt động trong chế độ nào?", k: ["khóa kênh", "vùng khóa kênh"], a: "Hoạt động trong chế độ vùng khóa kênh." },
+            { q: "Khi không có ánh sáng chiếu vào điện trở quang thì giá trị điện trở sẽ như thế nào?", k: ["nhỏ nhất"], a: "Giá trị điện trở nhỏ nhất." },
+            { q: "Một transistor loại pnp trong mạch điện được phân cực với các điện áp tĩnh là VBE = -0.7V; VCE = -0.2 V. Hỏi transistor đó hoạt động ở chế độ nào?", k: ["ngắt"], a: "Hoạt động ở chế độ ngắt." },
+            { q: "Phương pháp đo áp suất động hoạt động dựa trên nguyên tắc nào?", k: ["hiệu", "động", "tĩnh"], a: "Đo hiệu áp suất động và áp suất tĩnh." },
+            { q: "Năng lượng gì khiến cho bán dẫn sạch xuất hiện lỗ trống tại nhiệt độ phòng?", k: ["hóa trị"], a: "Năng lượng hóa trị." },
+            { q: "Viết biểu thức tính dòng ID của E-MOSFET kênh P?", k: ["ID", "K", "VGS", "VT"], a: "ID = K(VGS - VT)^2." },
+            { q: "Một transistor loại npn trong mạch điện được phân cực với các điện áp tĩnh là VBE = 0.7V; VCE = 0.2 V. Hỏi transistor đó hoạt động ở chế độ nào?", k: ["bão hòa"], a: "Transistor hoạt động ở chế độ bão hòa." },
+            { q: "Trong bán dẫn sạch, số lượng điện tử tự do so với số lượng lỗ trống như thế nào?", k: ["bằng", "hằng"], a: "Số lượng điện tử tự do bằng số lượng lỗ trống." },
+            { q: "LED là diode phát ra ánh sáng khi điện áp phân cực đặt vào như thế nào?", k: ["thuận", "phân cực thuận"], a: "Điện áp phân cực thuận." },
+            { q: "Màn hình cảm ứng kiểu sóng âm hoạt động dựa trên nguyên tắc nào?", k: ["ngắt quãng", "tín hiệu"], a: "Kiểm soát sự ngắt quãng tín hiệu." },
+            { q: "MOSFET kênh cảm ứng hoạt động trong vùng Ohmic và vùng ngắt được coi như một thiết bị gì?", k: ["điện trở"], a: "Được coi như điện trở." },
+            { q: "Cảm biến áp suất hoạt động dựa trên nguyên tắc nào?", k: ["nguồn tác động", "vi xử lý"], a: "Cần nguồn tác động lên cảm biến đưa giá trị về vi xử lí, vi xử lí tín hiệu rồi được tín hiệu ra." },
+            { q: "Nếu điện trở bị đoản mạch thì sụt áp trên nó bằng bao nhiêu?", k: ["0", "không"], a: "Sụt áp trên nó bằng 0." },
+            { q: "MOSFET kênh đặt sẵn gần giống như transistor nào?", k: ["D-MOSFET", "DMOSFET"], a: "Gần giống như transistor D-MOSFET." },
+            { q: "Cảm biến áp suất kiểu áp trở hoạt động dựa trên nguyên tắc nào?", k: ["biến dạng", "màng", "cấy"], a: "Dựa trên sự biến dạng của cấu trúc màng được chuyển thành tín hiệu điện nhờ cấy trên đó của phần tử điện áp điện trở." },
+            { q: "Nguồn điện áp ngoài đặt lên bán dẫn P, nếu đặt cực + bên trái, thì dòng dịch chuyển của hạt tải điện đa số theo chiều nào?", k: ["lỗ trống"], a: "Theo chiều của các hạt lỗ trống." },
+            { q: "Khi VDS ≈ 0 thì N- EMOSFET hoạt động trong chế độ nào?", k: ["ôn tính", "vùng ôn tính"], a: "Hoạt động trong vùng ôn tính." },
+            { q: "Một transistor trong mạch điện được phân cực với các điện áp tĩnh là: VBE = 0V; VCE ≈ VCC. Hỏi transistor đó hoạt động ở chế độ nào?", k: ["ngắt"], a: "Transistor làm việc ở chế độ ngắt." },
+            { q: "BJTpnp làm việc ở chế độ tích cực, dòng dịch chuyển chủ yếu giữa các miền chuyển động như thế nào?", k: ["khuyếch tán", "tái hợp", "thiểu số"], a: "Hạt dẫn đa số dễ dàng khuyếch tán qua cực E, tại cực B hạt dẫn bị tái hợp 1 phần, còn lại thiểu số hạt dẫn đi qua chuyển tiếp BC, tạo thành Ic." },
+            { q: "Cảm biến gia tốc hoạt động dựa trên nguyên tắc nào?", k: ["áp điện trở", "hiệu ứng"], a: "Hiệu ứng áp điện trở." },
+            { q: "Màn hình cảm ứng kiểu điện dung hoạt động dựa trên nguyên tắc nào?", k: ["điện dung", "chạm"], a: "Thay đổi điện dung khi chạm vào màn hình." },
+            { q: "Dòng rò trong điốt lý tưởng có giá trị bằng bao nhiêu?", k: ["0", "không"], a: "Bằng 0." },
+            { q: "Tụ điện hở mạch hay đoản mạch trong mạch DC, AC?", k: ["hở mạch"], a: "Tụ điện hở mạch trong mạch DC, AC." },
+            { q: "Khi lớp tiếp xúc gốc-phát của một transistor được phân cực ngược thì dòng cực gốc sẽ bằng bao nhiêu?", k: ["0", "không"], a: "Bằng 0." },
+            { q: "Cảm biến gia tốc áp điện hoạt động dựa trên nguyên tắc gì?", k: ["áp điện", "điện môi"], a: "Hiệu ứng áp điện của vật liệu điện môi." },
+            { q: "Khi VGS < VGS0 < 0 thì N- JFET hoạt động trong chế độ nào?", k: ["bão hòa"], a: "Hoạt động ở chế độ bão hòa." },
+            { q: "BJT npn được định thiên ở chế độ tích cực, điện tử trong miền E có đủ năng lượng để vượt qua hàng rào thế năng của chuyển tiếp nào?", k: ["BE", "chuyển tiếp BE"], a: "Chuyển tiếp BE." },
+            { q: "Số lượng điện tử và lỗ trống trong bán dẫn sạch sẽ thay đổi như thế nào khi nhiệt độ tăng?", k: ["tăng"], a: "Số lượng điện từ và lỗ trống tăng khi nhiệt độ tăng." },
+            { q: "Nêu các thành phần chính của cảm biến sinh học?", k: ["hóa học", "sinh học", "vật lý", "vật lí"], a: "Hóa học, Sinh học, Vật lí." },
+            { q: "Trong mạch chỉnh lưu cầu cả chu kỳ, tại một thời điểm có bao nhiêu điôt dẫn điện?", k: ["2", "hai"], a: "Có 2 diot dẫn điện." },
+            { q: "Một transistor ở trạng thái dẫn điện chưa bão hoà thì lớp chuyển tiếp TE và TC được phân cực như thế nào?", k: ["thuận", "ngược"], a: "TE phân cực thuận, TC phân cực ngược." },
+            { q: "Nguyên nhân tạo ra lỗ trống trong chất bán dẫn sạch tại nhiệt độ phòng là do năng lượng gì?", k: ["hóa trị", "mạng nguyên tử"], a: "Năng lượng của điện trở hóa trị trong mạng nguyên tử." },
+            { q: "Một transistor ở chế độ chuyển mạch thì lớp chuyển tiếp TE và TC được phân cực như thế nào?", k: ["cùng thuận", "cùng ngược"], a: "Sẽ phân cực cùng thuận hoặc cùng ngược." },
+            { q: "Đặc tuyến V-A của đi ôt mô tả điều gì?", k: ["dòng điện", "điện áp", "Uak"], a: "Mối quan hệ giữa dòng điện qua diot và Uak đặt vào." },
+            { q: "Khi VDS ≈ 0 thì N- DMOSFET hoạt động trong chế độ nào?", k: ["ôn tính", "vùng ôn tính"], a: "Hoạt động ở vùng ôn tính." },
+            { q: "Màn hình cảm ứng kiểu điện trở hoạt động dựa trên nguyên tắc nào?", k: ["trở kháng", "ma trận"], a: "Tăng trở kháng của ma trận dây dẫn để nhận được vị trí nhấn." },
+            { q: "Chất bán dẫn có bao nhiêu loại dòng điện tích dịch chuyển?", k: ["2", "khuếch tán", "trôi"], a: "2 loại: dòng điện khuếch tán và dòng điện trôi." },
+            { q: "Viết biểu thức tính dòng ID của D-MOSFET kênh N?", k: ["ID", "IDss", "VGS", "VGS0"], a: "ID = IDss(1 - VGS/VGS0)^2." },
+            { q: "VCE của một transistor công suất thấp ở trạng thái bão hòa có giá trị khoảng bao nhiêu?", k: ["0.2", "0.1"], a: "Khoảng 0.1 - 0.2V." },
+            { q: "Nêu ứng dụng chính của chuyển mạch vi cơ?", k: ["đổi chiều", "dao động", "rotor"], a: "Hệ đổi chiều dao động trong chuyển động quay của rotor." },
+            { q: "Số lượng điện tử và lỗ trống trong bán dẫn thuần tăng khi nhiệt độ thế nào?", k: ["tăng"], a: "Tăng khi nhiệt độ tăng." },
+            { q: "Viết biểu thức tính dòng ID của D-MOSFET kênh P?", k: ["ID", "IDss", "VGS", "VGS0"], a: "ID = IDss(1 - VGS/VGS0)^2." },
+            { q: "Giả sử một transistor hoạt động ở chế độ bão hoà. Khi đó công suất tiêu thụ của cấu kiện phụ thuộc yếu tố nào?", k: ["Ic", "Vce"], a: "Phụ thuộc vào Ic, VCE." },
+            { q: "Nguyên tử Acceptor có bao nhiêu điện tử hóa trị?", k: ["3", "ba"], a: "3 điện tử hóa trị." },
+            { q: "Nguyên tử Donor có bao nhiêu điện tử hóa trị?", k: ["4", "bốn"], a: "4 điện tử hóa trị." },
+            { q: "Nêu các dạng chuyển đổi của cảm biến sinh học?", k: ["điện hóa", "quang", "nhiệt", "áp điện", "vi cơ"], a: "Chuyển đổi điện hóa, quang, nhiệt, áp điện, vi cơ." },
+            { q: "Viết biểu thức tính dòng ID của JFET kênh P?", k: ["ID", "IDss", "VGS", "VGS0"], a: "ID = IDss(1 - VGS/VGS0)^2." },
+            { q: "So với điện áp vào thì điện áp ra của một bộ chỉnh lưu cả chu kỳ sẽ thế nào?", k: ["1 chiều", "một chiều", "dương", "âm"], a: "Chỉ có 1 chiều duy nhất là dương hoặc âm." },
+            { q: "Yếu tố nào làm cho một thay đổi nhỏ trong dòng cực gốc của một transistor dẫn tới một thay đổi lớn trong dòng cực góp?", k: ["B", "beta", "hệ số"], a: "Yếu tố β (hệ số khuếch đại)." },
+            { q: "BJT npn, nếu điện áp cung cấp như sau: VC<VB<VE, BJT làm việc ở chế độ nào?", k: ["bão hòa"], a: "Chế độ bão hòa." },
+            { q: "BJT pnp, nếu điện áp cung cấp như sau: VC>VB>VE, BJT làm việc ở chế độ nào?", k: ["bão hòa"], a: "Chế độ bão hòa." },
+            { q: "Điện áp mà khi đó xuất hiện hiện tượng thác lũ trong tiếp giáp PN gọi là điện áp gì?", k: ["ngược", "điện áp ngược"], a: "Điện áp ngược." },
+            { q: "Khi dòng Collector tăng, hệ số khuếch đại dòng β sẽ thay đổi như thế nào?", k: ["tăng", "ngược lại"], a: "Tăng và ngược lại." },
+            { q: "Ứng dụng chính của cảm biến sinh học?", k: ["khoa học", "kỹ thuật", "công nghệ sinh học", "môi trường", "y tế"], a: "Khoa học kỹ thuật, điều khiển công nghệ sinh học, môi trường, y tế." },
+            { q: "Đường tải tĩnh của mạch dùng BJT có thể được sử dụng để làm gì?", k: ["mô tả", "dòng ra", "điện áp ra", "1 chiều"], a: "Mô tả dòng ra của điện áp ra khi BJT ở chế độ 1 chiều." },
+            { q: "Khi 0 << VDS << VDD thì N- EMOSFET hoạt động trong chế độ nào?", k: ["bão hòa"], a: "Chế độ bão hòa." },
+            { q: "Ứng dụng chính của cảm biến gia tốc?", k: ["chuyển mạch", "động cơ", "phun mực", "hiển thị", "quang sợi"], a: "Chuyển mạch động cơ, đầu phun mực, hiển thị, thông tin quang sợi." },
+            { q: "BJT npn, nếu điện áp cung cấp như sau: VC>VB>VE, BJT làm việc ở chế độ nào?", k: ["tích cực"], a: "Chế độ tích cực." },
+            { q: "Dòng IG trong mạch tự định thiên dùng N-JFET bằng bao nhiêu?", k: ["0", "bằng 0"], a: "Bằng 0." },
+            { q: "Một điốt lý tưởng thì sụt áp trên nó có giá trị bằng bao nhiêu?", k: ["0", "bằng 0"], a: "Bằng 0." },
+            { q: "Tại nhiệt độ không tuyệt đối (00K), một chất bán dẫn thuần có bao nhiêu điện tự do và lỗ trống?", k: ["tất cả", "có tất cả"], a: "Có tất cả điện tự do và lỗ hổng." },
+            { q: "Chế độ phân cực nào cho BJT có độ ổn định điểm làm việc tốt nhất?", k: ["CE", "hồi tiếp âm"], a: "Phân cực CE (hoặc phân cực hồi tiếp âm)." },
+            { q: "Viết biểu thức tính dòng ID của JFET kênh N?", k: ["ID", "IDss", "VGS", "VGS0"], a: "ID = IDss(1 - VGS/VGS0)^2." },
+            { q: "Hai vùng hoạt động của transistor trong chế độ chuyển mạch là vùng nào?", k: ["bão hòa", "ngắt"], a: "Vùng bão hòa và vùng ngắt." },
+            { q: "Chế độ phân cực hồi tiếp âm cho BJT có độ ổn định làm việc tốt nhất", k: ["tốt nhất", "ổn định"], a: "Có độ ổn định làm việc tốt nhất." },
+            { q: "Sụt áp VCE của 1 transistor vỏ nhựa công suất thấp ở trạng thái bão hòa có giá trị", k: ["0.1", "0.2"], a: "0.1 - 0.2V." },
+            { q: "Biểu thức dòng của E-MOSFET kênh N", k: ["ID", "K", "VGS", "VT"], a: "ID = K(VGS - VT)^2." },
+            { q: "Khi VCE N- DMOSFET hoạt động ở chế độ khóa kênh", k: ["khóa kênh"], a: "N- DMOSFET hoạt động ở chế độ khóa kênh." },
+            { q: "Điện trở quang hoạt động dựa trên nguyên tắc gì?", k: ["quang điện trong"], a: "Nguyên tắc quang điện trong." }
+        ];
+
+        // --- 2. HỆ THỐNG XỬ LÝ DỮ LIỆU & PARSER ---
+        const colorMap = {'đen': 0, 'nâu': 1, 'đỏ': 2, 'cam': 3, 'vàng': 4, 'lục': 5, 'lam': 6, 'tím': 7, 'xám': 8, 'trắng': 9};
+        const multiplierMap = {'bạch kim': 0.01, 'vàng kim': 0.1, 'đen': 1, 'nâu': 10, 'đỏ': 100, 'cam': 1000, 'vàng': 10000, 'lục': 100000, 'lam': 1000000, 'tím': 10000000};
+        const toleranceMap = {'vàng kim': 5, 'bạch kim': 10, 'không màu': 20, 'nâu': 1, 'đỏ': 2};
+
+        function cleanStr(str) { return str.toLowerCase().replace(/–/g, '-').split('-').map(s => s.trim()).filter(s => s); }
+
+        function calculateColorCode(colorString, type = 'R') {
+            const colors = cleanStr(colorString);
+            let val = 0, tol = 20;
+            let lastColor = colors[colors.length - 1];
+            if (toleranceMap[lastColor] !== undefined) { tol = toleranceMap[lastColor]; colors.pop(); } 
+            else if (lastColor === 'không màu') { tol = 20; colors.pop(); }
+            let multiplierColor = colors.pop();
+            let multiplier = multiplierMap[multiplierColor] || 1;
+            let digits = "";
+            colors.forEach(c => { if (colorMap[c] !== undefined) digits += colorMap[c]; });
+            val = parseInt(digits) * multiplier;
+            return { value: val, tolerance: tol };
+        }
+
+        function calculateCapacitor(capString) {
+            let parts = capString.split(';');
+            let mainPart = capString.split('/')[0].trim();
+            let voltPart = capString.split('/')[1] ? capString.split('/')[1].replace('V', '').trim() : "0";
+            
+            let valueInUF = 0, isCodeType = false, tolerance = 0;
+            let displayBase = 0, displayExp = 0;
+            
+            const capTolMap = {'F': 1, 'G': 2, 'J': 5, 'K': 10, 'M': 20};
+            let lastChar = mainPart.slice(-1).toUpperCase();
+            
+            if (capTolMap[lastChar] && !mainPart.includes('.')) { 
+                tolerance = capTolMap[lastChar]; 
+                mainPart = mainPart.slice(0, -1); 
+            }
+
+            let cleanVal = mainPart.replace(/[FJKM]/g, '');
+            let num = parseFloat(cleanVal);
+
+            if (mainPart.includes('.') || (num < 100 && !isCodeType)) { 
+                valueInUF = num; 
+                isCodeType = false; 
+            } else {
+                if (num >= 100) {
+                    let lastDigit = num % 10;
+                    let firstDigits = Math.floor(num / 10);
+                    displayBase = firstDigits; 
+                    displayExp = lastDigit;
+                    valueInUF = firstDigits * Math.pow(10, lastDigit); 
+                } else { 
+                    valueInUF = num; 
+                }
+                isCodeType = true;
+            }
+            return { value: valueInUF, voltage: parseInt(voltPart) || 0, isCode: isCodeType, tolerance: tolerance, displayBase, displayExp };
+        }
+
+        // --- 3. KHỞI TẠO DỮ LIỆU ---
+        let resistorBank = rawResistors.map(s => ({ text: s, ...calculateColorCode(s, 'R') }));
+        
+        let capacitorBankAll = rawCapacitors.flatMap(s => s.split(';')).map(s => {
+            s = s.trim(); if(!s) return null; return { text: s, ...calculateCapacitor(s) };
+        }).filter(Boolean);
+        
+        let capacitorBankNumeric = capacitorBankAll.filter(c => !c.isCode);
+        let capacitorBankCode = capacitorBankAll.filter(c => c.isCode);
+        
+        let inductorBank = rawInductors.flatMap(s => s.split(';')).map(s => {
+            s = s.trim(); if(!s) return null; let res = calculateColorCode(s, 'L'); return { text: s, value: res.value, tolerance: res.tolerance };
+        }).filter(Boolean);
+        
+        document.getElementById('countR').textContent = resistorBank.length;
+        document.getElementById('countC').textContent = capacitorBankAll.length;
+        document.getElementById('countL').textContent = inductorBank.length;
+        document.getElementById('countQ').textContent = theoryDatabase.length;
+
+        // --- 4. HÀM TẠO ĐỀ ---
+        let currentExamData = []; 
+
+        function getRandomItems(arr, n) {
+            if (!arr || arr.length === 0) return [];
+            return [...arr].sort(() => 0.5 - Math.random()).slice(0, n);
+        }
+
+        function generateExam() {
+            const numQ = parseInt(document.getElementById('numQuestions').value) || 2;
+            const numTheory = parseInt(document.getElementById('numTheory').value) || 1;
+            const isTheoryOnly = document.getElementById('theoryOnlyMode').checked;
+            const container = document.getElementById('questions-container');
+            
+            currentExamData = [];
+            container.innerHTML = '';
+            document.getElementById('examId').innerText = "Mã đề: " + Math.random().toString(36).substr(2, 6).toUpperCase();
+
+            let theoryPool = [...theoryDatabase];
+
+            for (let i = 1; i <= numQ; i++) {
+                // Chỉ lấy linh kiện nếu không phải chế độ chỉ lý thuyết
+                let r, cNumeric, cCode, l;
+                if (!isTheoryOnly) {
+                    r = getRandomItems(resistorBank, 1)[0] || resistorBank[0];
+                    cNumeric = getRandomItems(capacitorBankNumeric, 1)[0] || capacitorBankNumeric[0];
+                    cCode = getRandomItems(capacitorBankCode, 1)[0] || capacitorBankCode[0];
+                    l = getRandomItems(inductorBank, 1)[0] || inductorBank[0];
+                }
+
+                if (theoryPool.length < numTheory) theoryPool = [...theoryDatabase];
+                const qTheory = [];
+                for(let k=0; k<numTheory; k++) {
+                    const idx = Math.floor(Math.random() * theoryPool.length);
+                    qTheory.push(theoryPool[idx]);
+                    theoryPool.splice(idx, 1);
+                }
+
+                // Lưu cờ isTheoryOnly vào data để chấm điểm
+                const qData = { id: i, r, c1: cNumeric, c2: cCode, l, theory: qTheory, isTheoryOnly: isTheoryOnly };
+                currentExamData.push(qData);
+
+                // Build HTML
+                let partA_HTML = '';
+                let partB_Title = isTheoryOnly ? 'LÝ THUYẾT (10 điểm)' : 'B. Lý thuyết (6 điểm)';
+                
+                // Nếu KHÔNG phải chỉ lý thuyết thì render Part A
+                if (!isTheoryOnly) {
+                    partA_HTML = `
+                        <div class="relative">
+                            <h4 class="font-bold text-gray-800 mb-4 text-sm uppercase tracking-wider text-indigo-900 border-b-2 border-indigo-100 pb-2 inline-block">A. Xác định giá trị linh kiện (4 điểm)</h4>
+                            <div class="space-y-4">
+                                <!-- 1. Điện trở -->
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                    <div class="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+                                        <div class="p-1.5 bg-yellow-100 rounded text-yellow-600"><i class="fas fa-bolt"></i></div>
+                                        <span>Điện trở:</span> <span class="font-mono text-indigo-700 bg-white border border-indigo-100 px-2 py-0.5 rounded shadow-sm">${r.text}</span>
+                                    </div>
+                                    <div class="grid grid-cols-12 gap-3">
+                                        <div class="col-span-12 md:col-span-5"><input type="number" step="any" placeholder="Giá trị" class="value-input" id="ans-r-val-${i}"></div>
+                                        <div class="col-span-6 md:col-span-3">
+                                            <select class="unit-select w-full" id="ans-r-unit-${i}"><option value="1">Ω</option><option value="1000">kΩ</option><option value="1000000">MΩ</option></select>
+                                        </div>
+                                        <div class="col-span-6 md:col-span-4 flex items-center gap-2">
+                                            <input type="number" placeholder="Sai số" class="value-input" id="ans-r-tol-${i}"> <span class="text-gray-500 text-sm">%</span>
+                                        </div>
+                                    </div>
+                                    <div class="feedback hidden mt-3 text-sm p-3 rounded-lg border" id="feed-r-${i}"></div>
+                                </div>
+
+                                <!-- 2. Tụ 1 -->
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                    <div class="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+                                        <div class="p-1.5 bg-blue-100 rounded text-blue-600"><i class="fas fa-car-battery"></i></div>
+                                        <span>Tụ điện 1 (Trực tiếp):</span> <span class="font-mono text-indigo-700 bg-white border border-indigo-100 px-2 py-0.5 rounded shadow-sm">${cNumeric.text}</span>
+                                    </div>
+                                    <div class="grid grid-cols-12 gap-3">
+                                        <div class="col-span-12 md:col-span-5"><input type="number" step="any" placeholder="Giá trị" class="value-input" id="ans-c1-val-${i}"></div>
+                                        <div class="col-span-6 md:col-span-3">
+                                            <select class="unit-select w-full" id="ans-c1-unit-${i}"><option value="1" selected>µF</option><option value="0.001">nF</option><option value="0.000001">pF</option></select>
+                                        </div>
+                                        <div class="col-span-6 md:col-span-4 flex items-center gap-2">
+                                            <span class="text-gray-500 text-sm font-medium">Vdc=</span>
+                                            <input type="number" placeholder="U" class="value-input" id="ans-c1-volt-${i}"> <span class="text-gray-500 text-sm">V</span>
+                                        </div>
+                                    </div>
+                                    <div class="feedback hidden mt-3 text-sm p-3 rounded-lg border" id="feed-c1-${i}"></div>
+                                </div>
+
+                                <!-- 3. Tụ 2 -->
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                    <div class="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+                                        <div class="p-1.5 bg-blue-100 rounded text-blue-600"><i class="fas fa-code"></i></div>
+                                        <span>Tụ điện 2 (Ghi mã):</span> <span class="font-mono text-indigo-700 bg-white border border-indigo-100 px-2 py-0.5 rounded shadow-sm">${cCode.text}</span>
+                                    </div>
+                                    <div class="flex flex-wrap items-center gap-x-2 gap-y-2">
+                                        <div class="flex items-center gap-1">
+                                            <input type="number" placeholder="Số" class="value-input !w-16 text-center !p-1" id="ans-c2-base-${i}">
+                                            <span class="font-serif text-gray-600">x10</span>
+                                            <input type="number" placeholder="Mũ" class="value-input !w-10 h-8 text-center -mt-3 text-xs !p-1" id="ans-c2-exp-${i}">
+                                        </div>
+                                        <select class="unit-select !w-18 !py-1 !px-2" id="ans-c2-unit-${i}"><option value="1" selected>µF</option><option value="0.001">nF</option><option value="0.000001">pF</option></select>
+                                        <span class="text-gray-300">|</span>
+                                        <div class="flex items-center gap-1">
+                                            <span class="text-gray-500">±</span>
+                                            <input type="number" placeholder="Sai" class="value-input !w-14 text-center !p-1" id="ans-c2-tol-${i}"> <span class="text-gray-500">%</span>
+                                        </div>
+                                        <span class="text-gray-300">;</span>
+                                        <div class="flex items-center gap-1">
+                                             <span class="text-gray-500 text-sm font-medium">Vdc=</span>
+                                             <input type="number" placeholder="U" class="value-input !w-16 text-center !p-1" id="ans-c2-volt-${i}"> <span class="text-gray-500 text-sm">V</span>
+                                        </div>
+                                    </div>
+                                    <div class="feedback hidden mt-3 text-sm p-3 rounded-lg border" id="feed-c2-${i}"></div>
+                                </div>
+
+                                <!-- 4. Cuộn cảm -->
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                    <div class="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+                                        <div class="p-1.5 bg-red-100 rounded text-red-600"><i class="fas fa-magnet"></i></div>
+                                        <span>Cuộn cảm:</span> <span class="font-mono text-indigo-700 bg-white border border-indigo-100 px-2 py-0.5 rounded shadow-sm">${l.text}</span>
+                                    </div>
+                                    <div class="grid grid-cols-12 gap-3">
+                                        <div class="col-span-12 md:col-span-5"><input type="number" step="any" placeholder="Giá trị" class="value-input" id="ans-l-val-${i}"></div>
+                                        <div class="col-span-6 md:col-span-3">
+                                            <select class="unit-select w-full" id="ans-l-unit-${i}"><option value="1">µH</option><option value="1000">mH</option><option value="1000000">H</option></select>
+                                        </div>
+                                        <div class="col-span-6 md:col-span-4 flex items-center gap-2">
+                                            <input type="number" placeholder="Sai số" class="value-input" id="ans-l-tol-${i}"> <span class="text-gray-500 text-sm">%</span>
+                                        </div>
+                                    </div>
+                                    <div class="feedback hidden mt-3 text-sm p-3 rounded-lg border" id="feed-l-${i}"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                const cardHTML = `
+                    <div class="question-card bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col group transition-all duration-300" id="card-${i}">
+                        <div class="bg-gray-50 border-b px-6 py-4 flex justify-between items-center">
+                            <div class="flex items-center gap-3">
+                                <span class="bg-indigo-600 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-md">${i}</span>
+                                <span class="text-gray-700 font-semibold">Câu hỏi ôn tập</span>
+                                <span id="score-badge-${i}" class="hidden ml-4 font-bold text-lg"></span>
+                            </div>
+                            <button onclick="checkQuestion(${i})" class="text-sm bg-white border border-indigo-200 text-indigo-600 hover:bg-indigo-50 hover:text-indigo-800 px-4 py-1.5 rounded-lg transition-colors font-medium shadow-sm">
+                                <i class="fas fa-check mr-1"></i> Kiểm tra
+                            </button>
+                        </div>
+                        
+                        <div class="p-6 md:p-8 flex-1 space-y-8">
+                            ${partA_HTML}
+
+                            <!-- PHẦN B -->
+                            <div>
+                                <h4 class="font-bold text-gray-800 mb-4 text-sm uppercase tracking-wider text-indigo-900 border-b-2 border-indigo-100 pb-2 inline-block">${partB_Title}</h4>
+                                <div class="space-y-6">
+                                    ${qTheory.map((t, idx) => `
+                                        <div>
+                                            <p class="text-gray-800 mb-2 font-medium flex items-start gap-2">
+                                                <span class="bg-indigo-100 text-indigo-700 w-6 h-6 rounded flex items-center justify-center text-xs font-bold shrink-0 mt-0.5">${idx + 1}</span> 
+                                                <span>${t.q}</span>
+                                            </p>
+                                            <textarea id="theory-ans-${i}-${idx}" placeholder="Nhập câu trả lời của bạn..." class="w-full p-3 text-sm border border-gray-300 rounded-lg bg-white h-24 resize-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none shadow-sm transition-shadow"></textarea>
+                                            <div id="theory-feed-${i}-${idx}" class="hidden mt-3 text-sm p-4 rounded-lg border bg-gray-50"></div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', cardHTML);
+            }
+        }
+
+        // --- 5. LOGIC CHẤM ĐIỂM (SCORE CALCULATION) ---
+        function isCorrect(userVal, correctVal) {
+            if (!userVal && userVal !== 0) return false;
+            return Math.abs(userVal - correctVal) / (correctVal || 1) < 0.05;
+        }
+
+        function displayFeedback(elementId, isRight, correctMsg) {
+            const el = document.getElementById(elementId);
+            el.classList.remove('hidden', 'bg-green-50', 'text-green-800', 'border-green-200', 'bg-red-50', 'text-red-800', 'border-red-200');
+            if (isRight) {
+                el.classList.add('bg-green-50', 'text-green-800', 'border-green-200');
+                el.innerHTML = `<div class="flex items-center gap-2"><i class="fas fa-check-circle text-green-600 text-lg"></i> <span class="font-medium">Chính xác! (+1đ)</span></div>`;
+            } else {
+                el.classList.add('bg-red-50', 'text-red-800', 'border-red-200');
+                el.innerHTML = `<div class="flex items-start gap-2"><i class="fas fa-times-circle text-red-600 text-lg mt-0.5"></i> <div><span class="font-bold">Chưa chính xác.</span> Đáp án đúng: <span class="font-mono bg-white px-1 rounded border border-red-100 ml-1 text-red-700">${correctMsg}</span></div></div>`;
+            }
+        }
+
+        function gradeTheoryQuestion(userText, theoryData, elementId) {
+            const el = document.getElementById(elementId);
+            el.classList.remove('hidden', 'bg-green-50', 'border-green-200', 'bg-yellow-50', 'border-yellow-200', 'bg-red-50', 'border-red-200');
+            
+            if(!userText || userText.trim() === "") {
+                el.classList.add('bg-red-50', 'border-red-200', 'text-red-800');
+                el.innerHTML = `<i class="fas fa-exclamation-circle mr-1"></i> Bạn chưa nhập câu trả lời. (0đ)`;
+                return 0; // Return score ratio
+            }
+
+            const normalizedUser = userText.toLowerCase();
+            const keywords = theoryData.k;
+            const foundKw = [];
+            const missingKw = [];
+
+            keywords.forEach(kw => {
+                if(normalizedUser.includes(kw.toLowerCase())) foundKw.push(kw);
+                else missingKw.push(kw);
+            });
+
+            const scoreRatio = foundKw.length / keywords.length;
+            let moodClass = "";
+            let title = "";
+            let icon = "";
+
+            if(scoreRatio === 1) {
+                moodClass = "bg-green-50 border-green-200 text-green-800";
+                title = "Xuất sắc! Đầy đủ ý.";
+                icon = "fa-check-double";
+            } else if (scoreRatio >= 0.5) {
+                moodClass = "bg-yellow-50 border-yellow-200 text-yellow-800";
+                title = "Khá tốt, nhưng còn thiếu ý.";
+                icon = "fa-check";
+            } else {
+                moodClass = "bg-red-50 border-red-200 text-red-800";
+                title = "Cần bổ sung thêm kiến thức.";
+                icon = "fa-times";
+            }
+
+            el.classList.add(...moodClass.split(' '));
+            
+            let feedbackHTML = `
+                <div class="flex items-start gap-3">
+                    <div class="mt-1 text-xl"><i class="fas ${icon}"></i></div>
+                    <div class="w-full">
+                        <div class="font-bold mb-2 text-base">${title}</div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3 text-sm">
+                            <div class="bg-white p-2 rounded border border-opacity-20 border-black">
+                                <span class="font-semibold text-green-600 block mb-1">✅ Ý đã nêu được:</span>
+                                ${foundKw.length > 0 ? foundKw.map(k => `<span class="inline-block bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs mr-1 mb-1">${k}</span>`).join('') : '<span class="text-gray-400 italic">Chưa có</span>'}
+                            </div>
+                            <div class="bg-white p-2 rounded border border-opacity-20 border-black">
+                                <span class="font-semibold text-red-600 block mb-1">❌ Ý còn thiếu:</span>
+                                ${missingKw.length > 0 ? missingKw.map(k => `<span class="inline-block bg-red-100 text-red-800 px-2 py-0.5 rounded text-xs mr-1 mb-1">${k}</span>`).join('') : '<span class="text-gray-400 italic">Không có</span>'}
+                            </div>
+                        </div>
+
+                        <div class="mt-2 pt-2 border-t border-black border-opacity-10">
+                            <span class="font-semibold block mb-1">📖 Đáp án tham khảo:</span>
+                            <p class="text-gray-700 italic bg-white p-2 rounded border border-gray-200">${theoryData.a}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            el.innerHTML = feedbackHTML;
+            return scoreRatio;
+        }
+
+        function checkQuestion(id) {
+            const data = currentExamData.find(d => d.id === id);
+            if (!data) return;
+
+            let scoreA = 0;
+            let scoreB = 0;
+            const isTheoryOnly = data.isTheoryOnly;
+
+            // --- PART A Grading ---
+            if (!isTheoryOnly) {
+                // 1. Resistor
+                const rVal = parseFloat(document.getElementById(`ans-r-val-${id}`).value);
+                const rUnit = parseFloat(document.getElementById(`ans-r-unit-${id}`).value);
+                const rTol = parseFloat(document.getElementById(`ans-r-tol-${id}`).value);
+                const isRCorrect = isCorrect(rVal * rUnit, data.r.value) && (rTol == data.r.tolerance);
+                if(isRCorrect) scoreA += 1;
+                displayFeedback(`feed-r-${id}`, isRCorrect, `${data.r.value} Ω (±${data.r.tolerance}%)`);
+
+                // 2. Cap 1
+                const c1Val = parseFloat(document.getElementById(`ans-c1-val-${id}`).value);
+                const c1Unit = parseFloat(document.getElementById(`ans-c1-unit-${id}`).value);
+                const c1Volt = parseFloat(document.getElementById(`ans-c1-volt-${id}`).value);
+                let c1Txt = data.c1.value < 0.001 ? (data.c1.value*1000000 + " pF") : (data.c1.value < 1 ? (data.c1.value*1000 + " nF") : (data.c1.value + " µF"));
+                const isC1Correct = isCorrect(c1Val * c1Unit, data.c1.value) && (c1Volt == data.c1.voltage);
+                if(isC1Correct) scoreA += 1;
+                displayFeedback(`feed-c1-${id}`, isC1Correct, `${c1Txt} / ${data.c1.voltage}V`);
+
+                // 3. Cap 2
+                const base = parseFloat(document.getElementById(`ans-c2-base-${id}`).value);
+                const exp = parseFloat(document.getElementById(`ans-c2-exp-${id}`).value);
+                const unit = parseFloat(document.getElementById(`ans-c2-unit-${id}`).value);
+                const volt = parseFloat(document.getElementById(`ans-c2-volt-${id}`).value);
+                const tol = parseFloat(document.getElementById(`ans-c2-tol-${id}`).value);
+                const userVal_uF = base * Math.pow(10, exp) * unit;
+                
+                let isC2Correct = isCorrect(userVal_uF, data.c2.value) && (volt == data.c2.voltage);
+                if(data.c2.tolerance > 0) isC2Correct = isC2Correct && (tol == data.c2.tolerance);
+                if(isC2Correct) scoreA += 1;
+                
+                let c2Txt = "";
+                if (data.c2.isCode && data.c2.displayBase) { c2Txt = `${data.c2.displayBase} . 10^${data.c2.displayExp} µF`; } 
+                else { c2Txt = data.c2.value < 0.001 ? (parseFloat((data.c2.value*1000000).toFixed(2)) + " pF") : (data.c2.value < 1 ? (parseFloat((data.c2.value*1000).toFixed(2)) + " nF") : (data.c2.value + " µF")); }
+                let tolTxt = data.c2.tolerance > 0 ? ` ±${data.c2.tolerance}%` : '';
+                displayFeedback(`feed-c2-${id}`, isC2Correct, `${c2Txt} / ${data.c2.voltage}V${tolTxt}`);
+
+                // 4. Inductor
+                const lVal = parseFloat(document.getElementById(`ans-l-val-${id}`).value);
+                const lUnit = parseFloat(document.getElementById(`ans-l-unit-${id}`).value);
+                const lTol = parseFloat(document.getElementById(`ans-l-tol-${id}`).value);
+                const isLCorrect = isCorrect(lVal * lUnit, data.l.value) && (lTol == data.l.tolerance);
+                if(isLCorrect) scoreA += 1;
+                displayFeedback(`feed-l-${id}`, isLCorrect, `${data.l.value} µH (±${data.l.tolerance}%)`);
+            }
+
+            // --- PART B Grading ---
+            // If theory only: 10 points total for theory
+            // If full exam: 6 points total for theory
+            const maxTheoryScore = isTheoryOnly ? 10 : 6;
+            const pointsPerTheory = maxTheoryScore / data.theory.length;
+            
+            data.theory.forEach((t, idx) => {
+                const userAns = document.getElementById(`theory-ans-${id}-${idx}`).value;
+                const ratio = gradeTheoryQuestion(userAns, t, `theory-feed-${id}-${idx}`);
+                scoreB += ratio * pointsPerTheory;
+            });
+
+            // --- TOTAL SCORE & DISPLAY ---
+            const totalScore = scoreA + scoreB;
+            const scoreEl = document.getElementById(`score-badge-${id}`);
+            scoreEl.classList.remove('hidden', 'text-red-600', 'bg-red-100', 'text-green-600', 'bg-green-100', 'text-yellow-600', 'bg-yellow-100');
+            scoreEl.classList.add('px-3', 'py-1', 'rounded-full', 'score-badge');
+            
+            // Color coding
+            if (totalScore >= 8) {
+                scoreEl.classList.add('text-green-700', 'bg-green-100', 'border', 'border-green-300');
+            } else if (totalScore >= 5) {
+                scoreEl.classList.add('text-yellow-700', 'bg-yellow-100', 'border', 'border-yellow-300');
+            } else {
+                scoreEl.classList.add('text-red-700', 'bg-red-100', 'border', 'border-red-300');
+            }
+            
+            scoreEl.innerHTML = `<i class="fas fa-chart-line mr-1"></i> Điểm: ${totalScore.toFixed(1)}/10`;
+        }
+
+        function checkAll() {
+            currentExamData.forEach(d => checkQuestion(d.id));
+        }
+
+        function resetForms() {
+            document.querySelectorAll('input, textarea').forEach(i => i.value = '');
+            document.querySelectorAll('.feedback').forEach(f => f.classList.add('hidden'));
+            document.querySelectorAll('[id^="theory-feed-"]').forEach(f => f.classList.add('hidden'));
+            document.querySelectorAll('[id^="score-badge-"]').forEach(s => s.classList.add('hidden'));
+        }
+
+        window.onload = generateExam;
+    </script>
+</body>
+</html>
