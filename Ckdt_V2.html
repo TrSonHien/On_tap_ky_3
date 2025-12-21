@@ -151,7 +151,7 @@
             { q: "Nếu điện trở bị hở mạch thì dòng qua nó bằng bao nhiêu?", k: ["0", "không", "bằng không"], a: "Bằng 0." },
             { q: "Mạch khuếch đại dùng BJT để có hiệu suất làm việc lớn nhất thì cần chọn điểm làm việc tĩnh tại vị trí nào trên đường tải tĩnh?", k: ["trung điểm", "giữa"], a: "Tại trung điểm trên đường tải tĩnh." },
             { q: "Khi điện áp phân cực thuận tăng từ 5V đến 10V, miền điện tích không gian của lớp chuyển tiếp PN sẽ như thế nào?", k: ["giảm", "hẹp"], a: "Độ rộng vùng điện tích không gian giảm, Điện trường tiếp xúc giảm, Điện thế tiếp xúc trong giảm." },
-            { q: "Cảm biến áp suất kiểu tụ hoạt động dựa trên nguyên tắc nào?", k: ["điện dung", "khoảng cách", "biến dạng"], a: "Dựa vào giá trị điện dung để xác định chỉ số áp suất. Khi thay đổi khoảng cách của cực tụ thì điện dung của tụ cũng sẽ thay đổi." },
+            { q: "Cảm biến áp suất kiểu tụ hoạt động dựa trên nguyên tắc nào?", k: ["điện dung", "khoảng cách", "biến dạng"], a: "Cảm biến áp suất kiểu tụ hoạt đọng dựa trên nguyên tắc: dựa vào giá trị điện dung để xác định chỉ số áp suất. Khi thay đổi khoảng cách của cực tụ thì điện dung của tụ cũng sẽ thay đổi. Lớp màng bị biến dạng khi có áp suất tác động vào làm cho bản cực lại gần với nhau hoặc kéo bản cực ra xa làm giá trị của tụ thay đổi. Qua hệ thống xử lí của thiết bị cảm biến đo áp suất xác định được áp suất." },
             
             // ĐÃ SỬA: VCE ngắt
             { q: "VCE của một transistor công suất thấp ở trạng thái tắt có giá trị khoảng bao nhiêu?", k: ["xấp xỉ", "nguồn", "VCC"], a: "Xấp xỉ VCC (Điện áp nguồn)." },
@@ -162,10 +162,10 @@
             { q: "Khi VDS ≈ VDD thì JFET hoạt động trong chế độ nào?", k: ["khóa kênh", "vùng khóa kênh"], a: "Hoạt động trong chế độ vùng khóa kênh." },
             { q: "Khi không có ánh sáng chiếu vào điện trở quang thì giá trị điện trở sẽ như thế nào?", k: ["nhỏ nhất"], a: "Giá trị điện trở nhỏ nhất." },
             { q: "Một transistor loại pnp trong mạch điện được phân cực với các điện áp tĩnh là VBE = -0.7V; VCE = -0.2 V. Hỏi transistor đó hoạt động ở chế độ nào?", k: ["ngắt"], a: "Hoạt động ở chế độ ngắt." },
-            { q: "Phương pháp đo áp suất động hoạt động dựa trên nguyên tắc nào?", k: ["hiệu", "động", "tĩnh"], a: "Đo hiệu áp suất động và áp suất tĩnh." },
+            { q: "Phương pháp đo áp suất động hoạt động dựa trên nguyên tắc nào?", k: ["hiệu", "toàn phần", "tĩnh"], a: "Đo hiệu áp suất toàn phần và áp suất tĩnh." },
             
             // ĐÃ SỬA: Năng lượng tạo lỗ trống/điện tử ở bán dẫn thuần
-            { q: "Năng lượng gì khiến cho bán dẫn sạch xuất hiện lỗ trống tại nhiệt độ phòng?", k: ["hóa trị", "nhiệt"], a: "Năng lượng nhiệt phá vỡ liên kết hóa trị." },
+            { q: "Năng lượng gì khiến cho bán dẫn sạch xuất hiện lỗ trống tại nhiệt độ phòng?", k: ["hóa trị"], a: "Năng lượng hóa trị khiến cho bán dẫn mạch xuất hiện lỗ trống tại nhiệt độ phòng." },
             
             { q: "Viết biểu thức tính dòng ID của E-MOSFET kênh P?", k: ["ID", "K", "VGS", "VT"], a: "ID = K(VGS - VT)^2." },
             { q: "Một transistor loại npn trong mạch điện được phân cực với các điện áp tĩnh là VBE = 0.7V; VCE = 0.2 V. Hỏi transistor đó hoạt động ở chế độ nào?", k: ["bão hòa"], a: "Transistor hoạt động ở chế độ bão hòa." },
@@ -184,15 +184,15 @@
             { q: "Khi VDS ≈ 0 thì N- EMOSFET hoạt động trong chế độ nào?", k: ["ôn tính", "vùng ôn tính"], a: "Hoạt động trong vùng ôn tính." },
             
             { q: "Một transistor trong mạch điện được phân cực với các điện áp tĩnh là: VBE = 0V; VCE ≈ VCC. Hỏi transistor đó hoạt động ở chế độ nào?", k: ["ngắt"], a: "Transistor làm việc ở chế độ ngắt." },
-            { q: "BJTpnp làm việc ở chế độ tích cực, dòng dịch chuyển chủ yếu giữa các miền chuyển động như thế nào?", k: ["khuyếch tán", "tái hợp", "thiểu số"], a: "Hạt dẫn đa số dễ dàng khuyếch tán qua cực E, tại cực B hạt dẫn bị tái hợp 1 phần, còn lại thiểu số hạt dẫn đi qua chuyển tiếp BC, tạo thành Ic." },
+            { q: "BJT pnp làm việc ở chế độ tích cực, dòng dịch chuyển chủ yếu giữa các miền chuyển động như thế nào?", k: ["khuyếch tán", "tái hợp", "thiểu số"], a: "Hạt dẫn đa số dễ dàng khuyếch tán qua cực E, tại cực B hạt dẫn bị tái hợp 1 phần, còn lại thiểu số hạt dẫn đi qua chuyển tiếp BC, tạo thành Ic." },
             { q: "Cảm biến gia tốc hoạt động dựa trên nguyên tắc nào?", k: ["áp điện trở", "hiệu ứng"], a: "Hiệu ứng áp điện trở." },
             { q: "Màn hình cảm ứng kiểu điện dung hoạt động dựa trên nguyên tắc nào?", k: ["điện dung", "chạm"], a: "Thay đổi điện dung khi chạm vào màn hình." },
             { q: "Dòng rò trong điốt lý tưởng có giá trị bằng bao nhiêu?", k: ["0", "không"], a: "Bằng 0." },
-            { q: "Tụ điện hở mạch hay đoản mạch trong mạch DC, AC?", k: ["hở mạch"], a: "Tụ điện hở mạch trong mạch DC, AC." },
+            { q: "Tụ điện hở mạch hay đoản mạch trong mạch DC, AC?", k: ["hở mạch trong DC", "đoản mạch trong AC"], a: "Tụ điện hở mạch trong mạch DC, đoản mạch trong AC." },
             { q: "Khi lớp tiếp xúc gốc-phát của một transistor được phân cực ngược thì dòng cực gốc sẽ bằng bao nhiêu?", k: ["0", "không"], a: "Bằng 0." },
             { q: "Cảm biến gia tốc áp điện hoạt động dựa trên nguyên tắc gì?", k: ["áp điện", "điện môi"], a: "Hiệu ứng áp điện của vật liệu điện môi." },
             { q: "Khi VGS << VGS0 << 0 thì N- JFET hoạt động trong chế độ nào?", k: ["bão hòa"], a: "Hoạt động ở chế độ bão hòa." },
-            { q: "BJT pnp, nếu điện áp cung cấp như sau: VC < VB < VE, BJT làm việc ở chế độ nào?", k: ["tích cực", "khuếch đại"], a: "Chế độ tích cực (Khuếch đại)." },
+            { q: "BJT pnp, nếu điện áp cung cấp như sau: VC < VB < VE, BJT làm việc ở chế độ nào?", k: ["tích cực"], a: "Chế độ tích cực (Khuếch đại)." },
             { q: "BJT npn được định thiên ở chế độ tích cực, điện tử trong miền E có đủ năng lượng để vượt qua hàng rào thế năng của chuyển tiếp nào?", k: ["BE", "chuyển tiếp BE"], a: "Chuyển tiếp BE." },
             { q: "Số lượng điện tử và lỗ trống trong bán dẫn sạch sẽ thay đổi như thế nào khi nhiệt độ tăng?", k: ["tăng"], a: "Số lượng điện từ và lỗ trống tăng khi nhiệt độ tăng." },
             { q: "Nêu các thành phần chính của cảm biến sinh học?", k: ["hóa học", "sinh học", "vật lý", "vật lí"], a: "Hóa học, Sinh học, Vật lí." },
@@ -203,7 +203,7 @@
             { q: "Đặc tuyến V-A của đi ôt mô tả điều gì?", k: ["dòng điện", "điện áp", "Uak"], a: "Mối quan hệ giữa dòng điện qua diot và Uak đặt vào." },
             { q: "Khi VDS ≈ 0 thì N- DMOSFET hoạt động trong chế độ nào?", k: ["ôn tính", "vùng ôn tính"], a: "Hoạt động ở vùng ôn tính." },
             { q: "Màn hình cảm ứng kiểu điện trở hoạt động dựa trên nguyên tắc nào?", k: ["trở kháng", "ma trận"], a: "Tăng trở kháng của ma trận dây dẫn để nhận được vị trí nhấn." },
-            { q: "Chất bán dẫn có bao nhiêu loại dòng điện tích dịch chuyển?", k: ["2", "khuếch tán", "trôi"], a: "2 loại: dòng điện khuếch tán và dòng điện trôi." },
+            { q: "Chất bán dẫn có bao nhiêu loại dòng điện tích dịch chuyển?", k: ["2", "khuếch tán", "trôi P"], a: "2 loại: dòng điện khuếch tán và dòng điện trôi P." },
             { q: "Viết biểu thức tính dòng ID của D-MOSFET kênh N?", k: ["ID", "IDss", "VGS", "VGS0"], a: "ID = IDss(1 - VGS/VGS0)^2." },
             { q: "VCE của một transistor công suất thấp ở trạng thái bão hòa có giá trị khoảng bao nhiêu?", k: ["0.2", "0.1"], a: "Khoảng 0.1 - 0.2V." },
             { q: "Nêu ứng dụng chính của chuyển mạch vi cơ?", k: ["đổi chiều", "dao động", "rotor"], a: "Hệ đổi chiều dao động trong chuyển động quay của rotor." },
@@ -224,7 +224,7 @@
             { q: "BJT npn, nếu điện áp cung cấp như sau: VC<VB<VE, BJT làm việc ở chế độ nào?", k: ["bão hòa"], a: "Chế độ bão hòa (Saturation)." },
             
             // ĐÃ SỬA: BJT Khuếch đại (VC > VB > VE)
-            { q: "BJT npn, nếu điện áp cung cấp như sau: VC>VB>VE, BJT làm việc ở chế độ nào?", k: ["khuếch đại", "tích cực", "active"], a: "Chế độ khuếch đại (Active)." },
+            { q: "BJT npn, nếu điện áp cung cấp như sau: VC>VB>VE, BJT làm việc ở chế độ nào?", k: ["tích cực"], a: "Chế độ tích cực (Active)." },
             
             { q: "BJT pnp, nếu điện áp cung cấp như sau: VC>VB>VE, BJT làm việc ở chế độ nào?", k: ["bão hòa"], a: "Chế độ bão hòa." },
             { q: "Điện áp mà khi đó xuất hiện hiện tượng thác lũ trong tiếp giáp PN gọi là điện áp gì?", k: ["ngược", "điện áp ngược"], a: "Điện áp ngược." },
@@ -236,7 +236,7 @@
             { q: "Một điốt lý tưởng thì sụt áp trên nó có giá trị bằng bao nhiêu?", k: ["0", "bằng 0"], a: "Bằng 0." },
             
             // ĐÃ SỬA: Bán dẫn 0 độ K
-            { q: "Tại nhiệt độ không tuyệt đối (00K), một chất bán dẫn thuần có bao nhiêu điện tự do và lỗ trống?", k: ["không", "cách điện"], a: "Không có hạt tải điện nào (Cách điện)." },
+            { q: "Tại nhiệt độ không tuyệt đối (0K), một chất bán dẫn thuần có bao nhiêu điện tự do và lỗ trống?", k: ["không"], a: "Không có hạt tải điện nào (Cách điện)." },
             
             { q: "Chế độ phân cực nào cho BJT có độ ổn định điểm làm việc tốt nhất?", k: ["CE", "hồi tiếp âm"], a: "Phân cực CE (hoặc phân cực hồi tiếp âm)." },
             { q: "Viết biểu thức tính dòng ID của JFET kênh N?", k: ["ID", "IDss", "VGS", "VGS0"], a: "ID = IDss(1 - VGS/VGS0)^2." },
