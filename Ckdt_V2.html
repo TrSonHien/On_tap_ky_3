@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ôn Tập Linh Kiện Điện Tử - Chuẩn Thực Tế</title>
+    <title>Ôn Tập Linh Kiện Điện Tử - Chuẩn Kiến Thức</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -29,13 +29,13 @@
                 <i class="fas fa-microchip"></i>
             </div>
             <div>
-                <h1 class="text-xl font-bold tracking-wide">Luyện Thi Linh Kiện</h1>
+                <h1 class="text-xl font-bold tracking-wide">Luyện Thi Linh Kiện (Đã Hiệu Đính)</h1>
                 <p class="text-xs text-indigo-300" id="examId">Mã đề: ---</p>
             </div>
         </div>
         <div class="hidden md:flex items-center gap-4 text-sm">
             <span class="bg-emerald-600 px-3 py-1 rounded-full border border-emerald-500 shadow-sm flex items-center gap-2">
-                <i class="fas fa-check-circle"></i> A: Thực tế | B: Giáo trình
+                <i class="fas fa-check-circle"></i> A: Thực tế | B: Chuẩn kiến thức
             </span>
         </div>
     </header>
@@ -87,8 +87,7 @@
     </div>
 
     <script>
-        // --- 1. DỮ LIỆU CỨNG TỪ PDF (HARDCODED BANKS) ---
-        
+        // --- 1. DỮ LIỆU LINH KIỆN (CHUẨN THỰC TẾ) ---
         const resistorBank = [
             { text: "Lam – vàng – cam - đen – vàng kim", val: 643, tol: 5 },
             { text: "Tím – cam – lục – không màu", val: 7300000, tol: 20 },
@@ -145,6 +144,7 @@
             { text: "Xám – vàng – đỏ - vàng kim", val: 8400, tol: 5 }
         ];
 
+        // --- NGÂN HÀNG ĐÁP ÁN LÝ THUYẾT (Cập nhật Sửa Lỗi) ---
         const theoryDatabase = [
             { q: "Màn hình cảm ứng kiểu hồng ngoại hoạt động dựa trên nguyên tắc nào?", k: ["ngắt", "tia sáng", "hồng ngoại"], a: "Dựa trên nguyên tắc ngắt các tia sáng hồng ngoại." },
             { q: "Khi có một thay đổi nhỏ trong dòng cực gốc của một transistor thì dòng cực phát của nó sẽ thay đổi như thế nào?", k: ["lớn", "phụ thuộc", "beta", "hệ số"], a: "Dòng cực phát sẽ thay đổi lớn phụ thuộc vào giá trị β (vì IE = (β+1)IB)." },
@@ -152,7 +152,10 @@
             { q: "Mạch khuếch đại dùng BJT để có hiệu suất làm việc lớn nhất thì cần chọn điểm làm việc tĩnh tại vị trí nào trên đường tải tĩnh?", k: ["trung điểm", "giữa"], a: "Tại trung điểm trên đường tải tĩnh." },
             { q: "Khi điện áp phân cực thuận tăng từ 5V đến 10V, miền điện tích không gian của lớp chuyển tiếp PN sẽ như thế nào?", k: ["giảm", "hẹp"], a: "Độ rộng vùng điện tích không gian giảm, Điện trường tiếp xúc giảm, Điện thế tiếp xúc trong giảm." },
             { q: "Cảm biến áp suất kiểu tụ hoạt động dựa trên nguyên tắc nào?", k: ["điện dung", "khoảng cách", "biến dạng"], a: "Dựa vào giá trị điện dung để xác định chỉ số áp suất. Khi thay đổi khoảng cách của cực tụ thì điện dung của tụ cũng sẽ thay đổi." },
-            { q: "VCE của một transistor công suất thấp ở trạng thái tắt có giá trị khoảng bao nhiêu?", k: ["2V", "5V", "2", "5"], a: "2V - 5V." },
+            
+            // ĐÃ SỬA: VCE ngắt
+            { q: "VCE của một transistor công suất thấp ở trạng thái tắt có giá trị khoảng bao nhiêu?", k: ["xấp xỉ", "nguồn", "VCC"], a: "Xấp xỉ VCC (Điện áp nguồn)." },
+            
             { q: "Khi điện áp phân cực ngược tăng từ 5V đến 10V, miền điện tích không gian của lớp chuyển tiếp PN sẽ như thế nào?", k: ["tăng", "rộng"], a: "Hiệu điện thế tiếp xúc tăng (làm I ngược tăng), Độ rộng vùng điện tích không gian tăng, Điện tích vùng chuyển tiếp tăng." },
             { q: "Khi chiếu ánh sáng vào điện trở quang thì giá trị điện trở sẽ như thế nào?", k: ["thay đổi", "bước sóng", "cường độ"], a: "Giá trị điện trở thay đổi theo bước sóng và cường độ sáng chiếu vào." },
             { q: "Phương pháp đo áp suất tĩnh dựa trên nguyên tắc nào?", k: ["lỗ khoan", "biến dạng", "thành bình"], a: "PP1: Đo áp suất chất liệu qua một lỗ được khoan trên thành bình nhờ cảm biến thích hợp; PP2: Đo trực tiếp biến dạng của thành bình do áp suất gây nên." },
@@ -160,7 +163,10 @@
             { q: "Khi không có ánh sáng chiếu vào điện trở quang thì giá trị điện trở sẽ như thế nào?", k: ["nhỏ nhất"], a: "Giá trị điện trở nhỏ nhất." },
             { q: "Một transistor loại pnp trong mạch điện được phân cực với các điện áp tĩnh là VBE = -0.7V; VCE = -0.2 V. Hỏi transistor đó hoạt động ở chế độ nào?", k: ["ngắt"], a: "Hoạt động ở chế độ ngắt." },
             { q: "Phương pháp đo áp suất động hoạt động dựa trên nguyên tắc nào?", k: ["hiệu", "động", "tĩnh"], a: "Đo hiệu áp suất động và áp suất tĩnh." },
-            { q: "Năng lượng gì khiến cho bán dẫn sạch xuất hiện lỗ trống tại nhiệt độ phòng?", k: ["hóa trị"], a: "Năng lượng hóa trị." },
+            
+            // ĐÃ SỬA: Năng lượng tạo lỗ trống/điện tử ở bán dẫn thuần
+            { q: "Năng lượng gì khiến cho bán dẫn sạch xuất hiện lỗ trống tại nhiệt độ phòng?", k: ["hóa trị", "nhiệt"], a: "Năng lượng nhiệt phá vỡ liên kết hóa trị." },
+            
             { q: "Viết biểu thức tính dòng ID của E-MOSFET kênh P?", k: ["ID", "K", "VGS", "VT"], a: "ID = K(VGS - VT)^2." },
             { q: "Một transistor loại npn trong mạch điện được phân cực với các điện áp tĩnh là VBE = 0.7V; VCE = 0.2 V. Hỏi transistor đó hoạt động ở chế độ nào?", k: ["bão hòa"], a: "Transistor hoạt động ở chế độ bão hòa." },
             { q: "Trong bán dẫn sạch, số lượng điện tử tự do so với số lượng lỗ trống như thế nào?", k: ["bằng", "hằng"], a: "Số lượng điện tử tự do bằng số lượng lỗ trống." },
@@ -172,7 +178,11 @@
             { q: "MOSFET kênh đặt sẵn gần giống như transistor nào?", k: ["D-MOSFET", "DMOSFET"], a: "Gần giống như transistor D-MOSFET." },
             { q: "Cảm biến áp suất kiểu áp trở hoạt động dựa trên nguyên tắc nào?", k: ["biến dạng", "màng", "cấy"], a: "Dựa trên sự biến dạng của cấu trúc màng được chuyển thành tín hiệu điện nhờ cấy trên đó của phần tử điện áp điện trở." },
             { q: "Nguồn điện áp ngoài đặt lên bán dẫn P, nếu đặt cực + bên trái, thì dòng dịch chuyển của hạt tải điện đa số theo chiều nào?", k: ["lỗ trống"], a: "Theo chiều của các hạt lỗ trống." },
+            
+            // ĐÃ SỬA: N-EMOSFET 0 << VDS << VDD
+            { q: "Khi 0 << VDS << VDD thì N- EMOSFET hoạt động trong chế độ nào?", k: ["ohmic", "tuyến tính", "triode"], a: "Vùng OHMIC (Tuyến tính / Triode)." },
             { q: "Khi VDS ≈ 0 thì N- EMOSFET hoạt động trong chế độ nào?", k: ["ôn tính", "vùng ôn tính"], a: "Hoạt động trong vùng ôn tính." },
+            
             { q: "Một transistor trong mạch điện được phân cực với các điện áp tĩnh là: VBE = 0V; VCE ≈ VCC. Hỏi transistor đó hoạt động ở chế độ nào?", k: ["ngắt"], a: "Transistor làm việc ở chế độ ngắt." },
             { q: "BJTpnp làm việc ở chế độ tích cực, dòng dịch chuyển chủ yếu giữa các miền chuyển động như thế nào?", k: ["khuyếch tán", "tái hợp", "thiểu số"], a: "Hạt dẫn đa số dễ dàng khuyếch tán qua cực E, tại cực B hạt dẫn bị tái hợp 1 phần, còn lại thiểu số hạt dẫn đi qua chuyển tiếp BC, tạo thành Ic." },
             { q: "Cảm biến gia tốc hoạt động dựa trên nguyên tắc nào?", k: ["áp điện trở", "hiệu ứng"], a: "Hiệu ứng áp điện trở." },
@@ -181,7 +191,8 @@
             { q: "Tụ điện hở mạch hay đoản mạch trong mạch DC, AC?", k: ["hở mạch"], a: "Tụ điện hở mạch trong mạch DC, AC." },
             { q: "Khi lớp tiếp xúc gốc-phát của một transistor được phân cực ngược thì dòng cực gốc sẽ bằng bao nhiêu?", k: ["0", "không"], a: "Bằng 0." },
             { q: "Cảm biến gia tốc áp điện hoạt động dựa trên nguyên tắc gì?", k: ["áp điện", "điện môi"], a: "Hiệu ứng áp điện của vật liệu điện môi." },
-            { q: "Khi VGS < VGS0 < 0 thì N- JFET hoạt động trong chế độ nào?", k: ["bão hòa"], a: "Chế độ bão hòa." },
+            { q: "Khi VGS << VGS0 << 0 thì N- JFET hoạt động trong chế độ nào?", k: ["bão hòa"], a: "Hoạt động ở chế độ bão hòa." },
+            { q: "BJT pnp, nếu điện áp cung cấp như sau: VC < VB < VE, BJT làm việc ở chế độ nào?", k: ["tích cực", "khuếch đại"], a: "Chế độ tích cực (Khuếch đại)." },
             { q: "BJT npn được định thiên ở chế độ tích cực, điện tử trong miền E có đủ năng lượng để vượt qua hàng rào thế năng của chuyển tiếp nào?", k: ["BE", "chuyển tiếp BE"], a: "Chuyển tiếp BE." },
             { q: "Số lượng điện tử và lỗ trống trong bán dẫn sạch sẽ thay đổi như thế nào khi nhiệt độ tăng?", k: ["tăng"], a: "Số lượng điện từ và lỗ trống tăng khi nhiệt độ tăng." },
             { q: "Nêu các thành phần chính của cảm biến sinh học?", k: ["hóa học", "sinh học", "vật lý", "vật lí"], a: "Hóa học, Sinh học, Vật lí." },
@@ -200,30 +211,44 @@
             { q: "Viết biểu thức tính dòng ID của D-MOSFET kênh P?", k: ["ID", "IDss", "VGS", "VGS0"], a: "ID = IDss(1 - VGS/VGS0)^2." },
             { q: "Giả sử một transistor hoạt động ở chế độ bão hoà. Khi đó công suất tiêu thụ của cấu kiện phụ thuộc yếu tố nào?", k: ["Ic", "Vce"], a: "Phụ thuộc vào Ic, VCE." },
             { q: "Nguyên tử Acceptor có bao nhiêu điện tử hóa trị?", k: ["3", "ba"], a: "3 điện tử hóa trị." },
-            { q: "Nguyên tử Donor có bao nhiêu điện tử hóa trị?", k: ["4", "bốn"], a: "4 điện tử hóa trị." },
+            
+            // ĐÃ SỬA: Nguyên tử Donor
+            { q: "Nguyên tử Donor có bao nhiêu điện tử hóa trị?", k: ["5", "năm"], a: "5 điện tử hóa trị." },
+            
             { q: "Nêu các dạng chuyển đổi của cảm biến sinh học?", k: ["điện hóa", "quang", "nhiệt", "áp điện", "vi cơ"], a: "Chuyển đổi điện hóa, quang, nhiệt, áp điện, vi cơ." },
             { q: "Viết biểu thức tính dòng ID của JFET kênh P?", k: ["ID", "IDss", "VGS", "VGS0"], a: "ID = IDss(1 - VGS/VGS0)^2." },
             { q: "So với điện áp vào thì điện áp ra của một bộ chỉnh lưu cả chu kỳ sẽ thế nào?", k: ["1 chiều", "một chiều", "dương", "âm"], a: "Chỉ có 1 chiều duy nhất là dương hoặc âm." },
             { q: "Yếu tố nào làm cho một thay đổi nhỏ trong dòng cực gốc của một transistor dẫn tới một thay đổi lớn trong dòng cực góp?", k: ["B", "beta", "hệ số"], a: "Yếu tố β (hệ số khuếch đại)." },
-            { q: "BJT npn, nếu điện áp cung cấp như sau: VC<VB<VE, BJT làm việc ở chế độ nào?", k: ["bão hòa"], a: "Chế độ bão hòa." },
+            
+            // ĐÃ SỬA: BJT Bão hòa (VC < VB < VE)
+            { q: "BJT npn, nếu điện áp cung cấp như sau: VC<VB<VE, BJT làm việc ở chế độ nào?", k: ["bão hòa"], a: "Chế độ bão hòa (Saturation)." },
+            
+            // ĐÃ SỬA: BJT Khuếch đại (VC > VB > VE)
+            { q: "BJT npn, nếu điện áp cung cấp như sau: VC>VB>VE, BJT làm việc ở chế độ nào?", k: ["khuếch đại", "tích cực", "active"], a: "Chế độ khuếch đại (Active)." },
+            
             { q: "BJT pnp, nếu điện áp cung cấp như sau: VC>VB>VE, BJT làm việc ở chế độ nào?", k: ["bão hòa"], a: "Chế độ bão hòa." },
             { q: "Điện áp mà khi đó xuất hiện hiện tượng thác lũ trong tiếp giáp PN gọi là điện áp gì?", k: ["ngược", "điện áp ngược"], a: "Điện áp ngược." },
             { q: "Khi dòng Collector tăng, hệ số khuếch đại dòng β sẽ thay đổi như thế nào?", k: ["tăng", "ngược lại"], a: "Tăng và ngược lại." },
             { q: "Ứng dụng chính của cảm biến sinh học?", k: ["khoa học", "kỹ thuật", "công nghệ sinh học", "môi trường", "y tế"], a: "Khoa học kỹ thuật, điều khiển công nghệ sinh học, môi trường, y tế." },
             { q: "Đường tải tĩnh của mạch dùng BJT có thể được sử dụng để làm gì?", k: ["mô tả", "dòng ra", "điện áp ra", "1 chiều"], a: "Mô tả dòng ra của điện áp ra khi BJT ở chế độ 1 chiều." },
-            { q: "Khi 0 << VDS << VDD thì N- EMOSFET hoạt động trong chế độ nào?", k: ["bão hòa"], a: "Chế độ bão hòa." },
             { q: "Ứng dụng chính của cảm biến gia tốc?", k: ["chuyển mạch", "động cơ", "phun mực", "hiển thị", "quang sợi"], a: "Chuyển mạch động cơ, đầu phun mực, hiển thị, thông tin quang sợi." },
-            { q: "BJT npn, nếu điện áp cung cấp như sau: VC>VB>VE, BJT làm việc ở chế độ nào?", k: ["tích cực"], a: "Chế độ tích cực." },
-            { q: "Dòng IG trong mạch tự định thiên dùng N-JFET bằng bao nhiêu?", k: ["0", "bằng 0"], a: "Bằng 0." },
+            { q: "Dòng IG trong mạch tự định thiên dùng N-JFET bằng bao nhiêu?", k: ["0", "bằng 0", "Ig = 0"], a: "Bằng 0." },
             { q: "Một điốt lý tưởng thì sụt áp trên nó có giá trị bằng bao nhiêu?", k: ["0", "bằng 0"], a: "Bằng 0." },
-            { q: "Tại nhiệt độ không tuyệt đối (00K), một chất bán dẫn thuần có bao nhiêu điện tự do và lỗ trống?", k: ["tất cả", "có tất cả"], a: "Có tất cả điện tự do và lỗ hổng." },
+            
+            // ĐÃ SỬA: Bán dẫn 0 độ K
+            { q: "Tại nhiệt độ không tuyệt đối (00K), một chất bán dẫn thuần có bao nhiêu điện tự do và lỗ trống?", k: ["không", "cách điện"], a: "Không có hạt tải điện nào (Cách điện)." },
+            
             { q: "Chế độ phân cực nào cho BJT có độ ổn định điểm làm việc tốt nhất?", k: ["CE", "hồi tiếp âm"], a: "Phân cực CE (hoặc phân cực hồi tiếp âm)." },
             { q: "Viết biểu thức tính dòng ID của JFET kênh N?", k: ["ID", "IDss", "VGS", "VGS0"], a: "ID = IDss(1 - VGS/VGS0)^2." },
             { q: "Hai vùng hoạt động của transistor trong chế độ chuyển mạch là vùng nào?", k: ["bão hòa", "ngắt"], a: "Vùng bão hòa và vùng ngắt." },
-            { q: "Chế độ phân cực hồi tiếp âm cho BJT có độ ổn định làm việc tốt nhất", k: ["tốt nhất", "ổn định"], a: "Có độ ổn định làm việc tốt nhất." },
+            { q: "Khi transistor được sử dụng trong một mạch làm việc ở chế độ tích cực thì những điện áp đúng được đặt vào như thế nào?", k: ["BE phân cực thuận", "BC phân cực ngược"], a: "Khi transistor được sử dụng trong một mạch làm việc ở chế độ tích cực thì BE phân cực thuận, BC phân cực ngược." },
+            { q: "Khi 0 << Vds << Vdd thì N- DMOSFET hoạt động trong chế độ nào?", k: ["bão hòa"], a: "N- DMOSFET hoạt động ở chế độ bão hòa." },
+            { q: "Điện áp ngược 20V được đặt qua diode điện áp đặt qua vùng chuyển tiếp là bao nhiêu?", k: ["20V", "~20V"], a: "Điện áp ngược 20V được đặt qua diode điện áp đặt qua vùng chuyển tiếp 20V." },
+            { q: "Trong các loại diode thu quang đã học, diode nào có hiệu ứng nhân thác lũ?", k: ["máy ảnh", "module đầu ra của PLC"], a: "Trong các diode thu quang đã học thì máy ảnh, các module đầu ra của PLC là diode có hiệu ứng nhân thác lũ." },
+
             { q: "Sụt áp VCE của 1 transistor vỏ nhựa công suất thấp ở trạng thái bão hòa có giá trị", k: ["0.1", "0.2"], a: "0.1 - 0.2V." },
             { q: "Biểu thức dòng của E-MOSFET kênh N", k: ["ID", "K", "VGS", "VT"], a: "ID = K(VGS - VT)^2." },
-            { q: "Khi VCE N- DMOSFET hoạt động ở chế độ khóa kênh", k: ["khóa kênh"], a: "N- DMOSFET hoạt động ở chế độ khóa kênh." },
+            { q: "Khi Vds ≈ Vdd thì N- DMOSFET hoạt động trong chế độ nào?", k: ["khóa kênh"], a: "N- DMOSFET hoạt động ở chế độ khóa kênh." },
             { q: "Điện trở quang hoạt động dựa trên nguyên tắc gì?", k: ["quang điện trong"], a: "Nguyên tắc quang điện trong." }
         ];
 
@@ -364,7 +389,7 @@
             }
         }
 
-        // --- LOGIC CHẤM ĐIỂM (PART A: REALITY, PART B: PDF) ---
+        // --- LOGIC CHẤM ĐIỂM (PART A: REALITY, PART B: CORRECTED KNOWLEDGE) ---
         function checkQuestion(id) {
             try {
                 const data = currentExamData.find(d => d.id === id);
@@ -449,7 +474,6 @@
         function displayFeedback(elId, isRight, msg) {
             const el = document.getElementById(elId);
             if(!el) return;
-            // Use explicit full classes for safety
             const colorClass = isRight ? "bg-green-50 border-green-200 text-green-800" : "bg-red-50 border-red-200 text-red-800";
             el.className = `mt-2 text-sm p-2 rounded border ${colorClass}`;
             el.innerHTML = isRight ? `<i class="fas fa-check"></i> Chính xác!` : `<i class="fas fa-times"></i> Sai. Đáp án: <b>${msg}</b>`;
@@ -460,8 +484,7 @@
             const el = document.getElementById(elId);
             if(!el) return;
             
-            // Explicit classes
-            let bgClass = "bg-red-50 border-red-200 text-red-800"; // Default bad
+            let bgClass = "bg-red-50 border-red-200 text-red-800";
             let icon = "times";
             let msg = "Chưa chính xác.";
 
