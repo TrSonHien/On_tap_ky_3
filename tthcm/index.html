@@ -276,6 +276,7 @@
             section: { part: 2, questions: [], answers: {} },
             exam: { questions: [], answers: {}, currentIndex: 0, timerInterval: null, timeLeft: 3600 },
 
+            // KHỞI TẠO DARK MODE
             initDarkMode: function() {
                 if (localStorage.getItem('darkMode') === 'true' || 
                     (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -303,6 +304,22 @@
                         if (text) text.innerText = 'Giao diện tối';
                     }
                 }
+            },
+
+            // HÀM XÁO TRỘN ĐÁP ÁN VÀ ĐỊNH VỊ LẠI INDEX ĐÁP ÁN ĐÚNG
+            prepareQuestions: function(rawQuestions) {
+                return rawQuestions.map(q => {
+                    // Tạo mảng lựa chọn đi kèm index cũ để theo vết đáp án đúng
+                    let optsWithIdx = q.options.map((opt, idx) => ({ opt, idx }));
+                    this.shuffle(optsWithIdx);
+                    
+                    return {
+                        ...q,
+                        options: optsWithIdx.map(item => item.opt),
+                        // Tìm kiếm vị trí mới của đáp án đúng sau khi đã xáo trộn
+                        correctAnswer: optsWithIdx.findIndex(item => item.idx === q.correctAnswer)
+                    };
+                });
             },
 
             shuffle: function(array) {
@@ -356,10 +373,9 @@
                 this.hideAllViews();
                 document.getElementById('view-endless').classList.remove('hidden');
                 
-                // Cài đặt trạng thái ôn ngẫu nhiên toàn bộ kho đề
                 this.endless.isSectionBound = false;
                 this.endless.currentSectionNum = null;
-                this.endless.pool = [...database];
+                this.endless.pool = this.prepareQuestions([...database]); // Tiến hành xáo trộn đáp án toàn kho đề
                 this.endless.correct = 0;
                 this.endless.wrong = 0;
                 
@@ -376,10 +392,10 @@
                 this.hideAllViews();
                 document.getElementById('view-endless').classList.remove('hidden');
                 
-                // Cài đặt bộ lọc chỉ lấy câu hỏi thuộc Chương được chọn
                 this.endless.isSectionBound = true;
                 this.endless.currentSectionNum = partNumber;
-                this.endless.pool = database.filter(q => q.section === partNumber);
+                // Lọc theo chương và xáo trộn đáp án
+                this.endless.pool = this.prepareQuestions(database.filter(q => q.section === partNumber)); 
                 this.endless.correct = 0;
                 this.endless.wrong = 0;
                 
@@ -401,9 +417,9 @@
                 
                 if (this.endless.pool.length === 0) {
                     if (this.endless.isSectionBound) {
-                        this.endless.pool = database.filter(q => q.section === this.endless.currentSectionNum);
+                        this.endless.pool = this.prepareQuestions(database.filter(q => q.section === this.endless.currentSectionNum));
                     } else {
-                        this.endless.pool = [...database];
+                        this.endless.pool = this.prepareQuestions([...database]);
                     }
                 }
 
@@ -516,7 +532,8 @@
                 this.currentMode = 'section';
                 this.section.part = partNumber;
                 this.section.answers = {};
-                this.section.questions = database.filter(q => q.section === partNumber);
+                // Trích xuất câu hỏi theo chương và xáo trộn toàn bộ đáp án của từng câu
+                this.section.questions = this.prepareQuestions(database.filter(q => q.section === partNumber));
                 
                 this.hideAllViews();
                 document.getElementById('view-section').classList.remove('hidden');
@@ -584,8 +601,10 @@
                 this.exam.answers = {};
                 this.exam.currentIndex = 0;
                 
-                const shuffled = this.shuffle([...database]);
-                this.exam.questions = shuffled.slice(0, 50);
+                // Bước 1: Trộn ngẫu nhiên thứ tự các câu hỏi trong ngân hàng đề
+                const shuffledQuestions = this.shuffle([...database]);
+                // Bước 2: Cắt lấy đúng 50 câu và bắt đầu tiến hành trộn đáp án của từng câu đó
+                this.exam.questions = this.prepareQuestions(shuffledQuestions.slice(0, 50));
                 
                 this.renderExamGrid();
                 this.renderExamQuestion(0);
