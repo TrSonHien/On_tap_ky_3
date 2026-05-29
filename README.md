@@ -1,4 +1,4 @@
-# Quiz Practice Toolkits (Semester 3)
+# Quiz Practice Toolkits (Semester 4)
 
 This repository contains pure HTML/JS quiz toolkits and question databases to support effective preparation for various academic course examinations, including the newly updated Ho Chi Minh Ideology (TTHCM) module[cite: 1].
 
