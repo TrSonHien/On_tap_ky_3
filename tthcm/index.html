@@ -45,7 +45,7 @@
             </div>
             <div class="flex items-center gap-4">
                 <button onclick="app.toggleDarkMode()" class="text-slate-500 hover:text-red-600 font-medium flex items-center gap-2 transition-colors dark:text-slate-400 dark:hover:text-red-400">
-                    <i id="dark-mode-icon" class="fa-solid fa-moon"></i> <span id="dark-mode-text" class="hidden sm:inline">Giao diện tối</span>
+                    <i id="dark-mode-icon" class="fa-solid fa-sun"></i> <span id="dark-mode-text" class="hidden sm:inline">Giao diện tối</span>
                 </button>
                 <button onclick="app.requestGoHome()" class="text-slate-500 hover:text-red-600 font-medium flex items-center gap-2 transition-colors dark:text-slate-400 dark:hover:text-red-400">
                     <i class="fa-solid fa-house"></i> <span class="hidden sm:inline">Trang chủ</span>
@@ -69,7 +69,7 @@
                     </div>
                     <div>
                         <h3 class="text-xl font-bold mb-2 dark:text-white">Luyện Tập Ngẫu Nhiên Toàn Bộ</h3>
-                        <p class="text-slate-500 text-sm dark:text-slate-400">Hệ thống chọn ngẫu nhiên từng câu hỏi từ toàn bộ tất cả các chương. Trả lời xong biết ngay kết quả đúng/sai.</p>
+                        <p class="text-slate-500 text-sm dark:text-slate-400">Hệ thống chọn ngẫu nhiên từng câu hỏi từ toàn bộ tất cả các chương. Trả lời xong biết ngay kết quả đúng/sai. <span class="text-red-500 dark:text-red-400 font-medium block mt-1 text-xs"><i class="fa-solid fa-keyboard mr-1"></i>Hỗ trợ phím số 1-4, Enter</span></p>
                     </div>
                 </button>
 
@@ -89,7 +89,7 @@
                     </div>
                     <div>
                         <h3 class="text-xl font-bold mb-2 dark:text-white">Thi Thử Chuẩn Hóa</h3>
-                        <p class="text-slate-500 text-sm dark:text-slate-400">Đề thi trộn ngẫu nhiên đúng 50 câu hỏi từ ngân hàng đề. Thời gian giới hạn 60 phút. Có tính điểm.</p>
+                        <p class="text-slate-500 text-sm dark:text-slate-400">Đề thi trộn ngẫu nhiên đúng 50 câu hỏi từ ngân hàng đề. Thời gian giới hạn 60 phút. Có tính điểm. <span class="text-purple-500 dark:text-purple-400 font-medium block mt-1 text-xs"><i class="fa-solid fa-keyboard mr-1"></i>Hỗ trợ phím số 1-4, Enter, Backspace</span></p>
                     </div>
                 </button>
             </div>
@@ -157,10 +157,10 @@
                     
                     <div class="flex justify-between items-center mt-6">
                         <button onclick="app.prevExamQuestion()" id="exam-prev-btn" class="bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-5 py-2.5 rounded-xl font-medium transition-colors disabled:opacity-50 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-700">
-                            <i class="fa-solid fa-arrow-left mr-2"></i> Câu trước
+                            <i class="fa-solid fa-arrow-left mr-2"></i> Câu trước <kbd class="hidden sm:inline-block ml-1 px-1.5 py-0.5 text-xs text-slate-400 bg-slate-100 dark:bg-slate-700 rounded shadow-sm">Backspace</kbd>
                         </button>
                         <button onclick="app.nextExamQuestion()" id="exam-next-btn" class="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-xl font-medium transition-colors disabled:opacity-50">
-                            Câu tiếp theo <i class="fa-solid fa-arrow-right ml-2"></i>
+                            Câu tiếp theo <i class="fa-solid fa-arrow-right ml-2"></i> <kbd class="hidden sm:inline-block ml-1 px-1.5 py-0.5 text-xs text-red-200 bg-red-700 rounded shadow-sm">Enter</kbd>
                         </button>
                     </div>
                 </div>
@@ -306,17 +306,65 @@
                 }
             },
 
+            // TÍNH NĂNG ĐIỀU KHIỂN BẰNG BÀN PHÍM TỰ ĐỘNG
+            initKeyBindings: function() {
+                window.addEventListener('keydown', (e) => {
+                    // Không kích hoạt phím tắt nếu đang thao tác trong các input nhập liệu ngoài ý muốn
+                    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+                    const key = e.key;
+
+                    // 1. Phím tắt tại giao diện Luyện ngẫu nhiên (Endless Mode)
+                    if (this.currentMode === 'endless') {
+                        if (['1', '2', '3', '4'].includes(key)) {
+                            const idx = parseInt(key) - 1;
+                            const buttons = document.querySelectorAll('.endless-opt-btn');
+                            if (buttons[idx] && !buttons[idx].disabled) {
+                                buttons[idx].click();
+                            }
+                        }
+                        if (key === 'Enter') {
+                            const nextBtnContainer = document.getElementById('endless-next-btn-container');
+                            if (nextBtnContainer && !nextBtnContainer.classList.contains('hidden')) {
+                                this.loadEndlessQuestion();
+                            }
+                        }
+                    }
+
+                    // 2. Phím tắt tại giao diện Thi thử chuẩn hóa (Exam Mode)
+                    if (this.currentMode === 'exam') {
+                        if (['1', '2', '3', '4'].includes(key)) {
+                            const idx = parseInt(key) - 1;
+                            const currentQ = this.exam.questions[this.exam.currentIndex];
+                            if (currentQ) {
+                                this.handleExamAnswer(currentQ.id, idx);
+                            }
+                        }
+                        if (key === 'Enter') {
+                            e.preventDefault(); // Chặn hành vi submit form mặc định của Enter
+                            if (this.exam.currentIndex < this.exam.questions.length - 1) {
+                                this.nextExamQuestion();
+                            }
+                        }
+                        if (key === 'Backspace') {
+                            e.preventDefault(); // Chặn hành vi quay lại trang trước của trình duyệt
+                            if (this.exam.currentIndex > 0) {
+                                this.prevExamQuestion();
+                            }
+                        }
+                    }
+                });
+            },
+
             // HÀM XÁO TRỘN ĐÁP ÁN VÀ ĐỊNH VỊ LẠI INDEX ĐÁP ÁN ĐÚNG
             prepareQuestions: function(rawQuestions) {
                 return rawQuestions.map(q => {
-                    // Tạo mảng lựa chọn đi kèm index cũ để theo vết đáp án đúng
                     let optsWithIdx = q.options.map((opt, idx) => ({ opt, idx }));
                     this.shuffle(optsWithIdx);
                     
                     return {
                         ...q,
                         options: optsWithIdx.map(item => item.opt),
-                        // Tìm kiếm vị trí mới của đáp án đúng sau khi đã xáo trộn
                         correctAnswer: optsWithIdx.findIndex(item => item.idx === q.correctAnswer)
                     };
                 });
@@ -375,7 +423,7 @@
                 
                 this.endless.isSectionBound = false;
                 this.endless.currentSectionNum = null;
-                this.endless.pool = this.prepareQuestions([...database]); // Tiến hành xáo trộn đáp án toàn kho đề
+                this.endless.pool = this.prepareQuestions([...database]); 
                 this.endless.correct = 0;
                 this.endless.wrong = 0;
                 
@@ -394,7 +442,6 @@
                 
                 this.endless.isSectionBound = true;
                 this.endless.currentSectionNum = partNumber;
-                // Lọc theo chương và xáo trộn đáp án
                 this.endless.pool = this.prepareQuestions(database.filter(q => q.section === partNumber)); 
                 this.endless.correct = 0;
                 this.endless.wrong = 0;
@@ -435,7 +482,7 @@
                 this.endless.currentQ.options.forEach((opt, index) => {
                     const btn = document.createElement('button');
                     btn.className = `w-full text-left p-4 rounded-xl border-2 border-slate-200 hover:border-red-500 hover:bg-red-50/50 transition-all font-medium endless-opt-btn dark:border-slate-700 dark:hover:border-red-500 dark:hover:bg-slate-700/40 dark:text-slate-200`;
-                    btn.innerText = opt;
+                    btn.innerHTML = `<span class="inline-block w-6 h-6 text-center text-xs font-bold leading-6 rounded bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400 mr-2 border border-slate-200 dark:border-slate-600">${index + 1}</span> ${opt}`;
                     btn.onclick = () => this.handleEndlessAnswer(index, btn);
                     optionsContainer.appendChild(btn);
                 });
@@ -532,7 +579,6 @@
                 this.currentMode = 'section';
                 this.section.part = partNumber;
                 this.section.answers = {};
-                // Trích xuất câu hỏi theo chương và xáo trộn toàn bộ đáp án của từng câu
                 this.section.questions = this.prepareQuestions(database.filter(q => q.section === partNumber));
                 
                 this.hideAllViews();
@@ -601,9 +647,7 @@
                 this.exam.answers = {};
                 this.exam.currentIndex = 0;
                 
-                // Bước 1: Trộn ngẫu nhiên thứ tự các câu hỏi trong ngân hàng đề
                 const shuffledQuestions = this.shuffle([...database]);
-                // Bước 2: Cắt lấy đúng 50 câu và bắt đầu tiến hành trộn đáp án của từng câu đó
                 this.exam.questions = this.prepareQuestions(shuffledQuestions.slice(0, 50));
                 
                 this.renderExamGrid();
@@ -664,6 +708,7 @@
                     optionsContainer.innerHTML += `
                         <label class="flex items-start gap-3 p-4 rounded-xl border border-slate-200 hover:border-red-300 hover:bg-red-50/20 cursor-pointer transition-all dark:border-slate-700 dark:hover:border-red-500/30 dark:hover:bg-slate-700/20 ${isChecked ? 'border-red-500 bg-red-50/40 ring-1 ring-red-500 dark:border-red-500 dark:bg-red-950/30 dark:ring-red-500' : ''}">
                             <input type="radio" name="exam-current-q" value="${optIdx}" class="custom-radio mt-0.5" ${isChecked} onchange="app.handleExamAnswer(${q.id}, ${optIdx})">
+                            <span class="inline-block w-6 h-6 text-center text-xs font-bold leading-6 rounded bg-slate-100 text-slate-500 dark:bg-slate-700 dark:text-slate-400 mr-2 border border-slate-200 dark:border-slate-600">${optIdx + 1}</span>
                             <span class="text-slate-700 font-medium dark:text-slate-200">${opt}</span>
                         </label>
                     `;
@@ -747,7 +792,7 @@
                             optClass = 'p-3 rounded-lg border border-rose-300 bg-rose-50 text-rose-800 line-through opacity-80 dark:border-rose-600 dark:bg-rose-950/40 dark:text-rose-300';
                             icon = '<i class="fa-solid fa-circle-xmark float-right mt-1 text-rose-600 dark:text-rose-400"></i>';
                         }
-                        optionsHTML += `<div class="${optClass}">${opt} ${icon}</div>`;
+                        optionsHTML += `<div class="${optClass}"><span class="inline-block px-1.5 py-0.5 mr-2 bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-xs rounded font-bold">${optIdx + 1}</span>${opt} ${icon}</div>`;
                     });
                     optionsHTML += '</div>';
                     
@@ -780,6 +825,7 @@
 
         window.onload = () => {
             app.initDarkMode();
+            app.initKeyBindings(); // Khởi động lắng nghe phím tắt điều hướng
             if (typeof database === 'undefined') {
                 alert("Lỗi: Không phát hiện thấy mảng dữ liệu 'database'. Hãy đặt tệp html này cùng thư mục và tải đồng hành với tệp data.js chứa dữ liệu trắc nghiệm.");
             }
