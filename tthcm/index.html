@@ -45,7 +45,7 @@
             </div>
             <div class="flex items-center gap-4">
                 <button onclick="app.toggleDarkMode()" class="text-slate-500 hover:text-red-600 font-medium flex items-center gap-2 transition-colors dark:text-slate-400 dark:hover:text-red-400">
-                    <i id="dark-mode-icon" class="fa-solid fa-sun"></i> <span id="dark-mode-text" class="hidden sm:inline">Giao diện tối</span>
+                    <i id="dark-mode-icon" class="fa-solid fa-sun"></i> <span id="dark-mode-text" class="hidden sm:inline">Giao diện sáng</span>
                 </button>
                 <button onclick="app.requestGoHome()" class="text-slate-500 hover:text-red-600 font-medium flex items-center gap-2 transition-colors dark:text-slate-400 dark:hover:text-red-400">
                     <i class="fa-solid fa-house"></i> <span class="hidden sm:inline">Trang chủ</span>
@@ -309,7 +309,6 @@
             // TÍNH NĂNG ĐIỀU KHIỂN BẰNG BÀN PHÍM TỰ ĐỘNG
             initKeyBindings: function() {
                 window.addEventListener('keydown', (e) => {
-                    // Không kích hoạt phím tắt nếu đang thao tác trong các input nhập liệu ngoài ý muốn
                     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
 
                     const key = e.key;
@@ -341,13 +340,13 @@
                             }
                         }
                         if (key === 'Enter') {
-                            e.preventDefault(); // Chặn hành vi submit form mặc định của Enter
+                            e.preventDefault(); 
                             if (this.exam.currentIndex < this.exam.questions.length - 1) {
                                 this.nextExamQuestion();
                             }
                         }
                         if (key === 'Backspace') {
-                            e.preventDefault(); // Chặn hành vi quay lại trang trước của trình duyệt
+                            e.preventDefault(); 
                             if (this.exam.currentIndex > 0) {
                                 this.prevExamQuestion();
                             }
@@ -356,10 +355,14 @@
                 });
             },
 
-            // HÀM XÁO TRỘN ĐÁP ÁN VÀ ĐỊNH VỊ LẠI INDEX ĐÁP ÁN ĐÚNG
+            // HÀM BÓC CHỮ CÁI THỪA Ở ĐẦU CHUỖI VÀ XÁO TRỘN ĐÁP ÁN
             prepareQuestions: function(rawQuestions) {
                 return rawQuestions.map(q => {
-                    let optsWithIdx = q.options.map((opt, idx) => ({ opt, idx }));
+                    let optsWithIdx = q.options.map((opt, idx) => {
+                        // Tự động tìm kiếm và xóa bỏ định dạng "A. ", "B. ", "A.", "B." ở đầu chuỗi văn bản gốc
+                        let cleanOpt = opt.replace(/^[A-D]\.\s*/i, '');
+                        return { opt: cleanOpt, idx };
+                    });
                     this.shuffle(optsWithIdx);
                     
                     return {
@@ -825,7 +828,7 @@
 
         window.onload = () => {
             app.initDarkMode();
-            app.initKeyBindings(); // Khởi động lắng nghe phím tắt điều hướng
+            app.initKeyBindings(); 
             if (typeof database === 'undefined') {
                 alert("Lỗi: Không phát hiện thấy mảng dữ liệu 'database'. Hãy đặt tệp html này cùng thư mục và tải đồng hành với tệp data.js chứa dữ liệu trắc nghiệm.");
             }
